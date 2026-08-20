@@ -475,11 +475,13 @@ a {
 .stack-section {
   position: relative;
   width: 100%;
+  overflow: visible;
 }
 
 .stack-container {
   width: 100%;
-  height: calc(100vh - var(--nav-h));
+  height: calc(100vh - var(--nav-h)) !important;
+  max-height: calc(100vh - var(--nav-h)) !important;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

@@ -157,15 +157,18 @@ function initGSAPCardStack() {
   ScrollTrigger.create({
     trigger: ".stack-section",
     start: "top top+=" + getNavHeight(),
-    end: "+=2200",
+    end: "+=2400", // runway buffer so Card 3 finishes expanding well before unpin
     pin: true,
     scrub: false,
     anticipatePin: 1,
     onUpdate: (self) => {
       const progress = self.progress;
-      if (progress < 0.33) {
+      // Step 2 triggers earlier (0.60) so it has a hold buffer before
+      // the section unpins at progress 1, instead of animating right
+      // up to the unpin boundary and snapping mid-tween.
+      if (progress < 0.3) {
         goToStep(0);
-      } else if (progress < 0.66) {
+      } else if (progress < 0.6) {
         goToStep(1);
       } else {
         goToStep(2);

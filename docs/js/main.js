@@ -122,7 +122,7 @@ function initGSAPCardStack() {
     expandedH = containerH - 2 * collapsedH;
   }
 
-  let activeIndex = -1; // -1 = none expanded yet, all start collapsed
+  let activeIndex = 0; // Card 1 (Yellow/Day) starts expanded — matches the pinned entry frame
   let isAnimating = false;
 
   function applyHeights(instant) {
@@ -145,7 +145,7 @@ function initGSAPCardStack() {
   }
 
   measure();
-  applyHeights(true); // Initial state: all three cards collapsed, peeking.
+  applyHeights(true); // Initial state: Yellow expanded, Pink & Countdown collapsed/peeking.
 
   function goToStep(index) {
     if (index < 0 || index > 2 || index === activeIndex || isAnimating) return;
@@ -157,7 +157,7 @@ function initGSAPCardStack() {
   ScrollTrigger.create({
     trigger: ".stack-section",
     start: "top top+=" + getNavHeight(),
-    end: "+=1800",
+    end: "+=2200",
     pin: true,
     scrub: false,
     anticipatePin: 1,

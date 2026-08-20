@@ -122,7 +122,7 @@ function initGSAPCardStack() {
     expandedH = containerH - 2 * collapsedH;
   }
 
-  let activeIndex = 0;
+  let activeIndex = -1; // -1 = none expanded yet, all start collapsed
   let isAnimating = false;
 
   function applyHeights(instant) {
@@ -145,7 +145,7 @@ function initGSAPCardStack() {
   }
 
   measure();
-  applyHeights(true); // Initial state: Day expanded, Night & Countdown collapsed peeking.
+  applyHeights(true); // Initial state: all three cards collapsed, peeking.
 
   function goToStep(index) {
     if (index < 0 || index > 2 || index === activeIndex || isAnimating) return;

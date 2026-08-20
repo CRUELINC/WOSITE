@@ -125,19 +125,24 @@ function initGSAPCardStack() {
     expandedH = fullH - 2 * collapsedH;
   }
 
-  let activeIndex = -1; // -1 = approach state, all collapsed until scroll enters the pin
+  let activeIndex = -1; // -1 = collapsed (approach, or collapsed-while-pinned)
   let isAnimating = false;
+  // Whether ScrollTrigger currently has the section pinned. Height is
+  // keyed off this, not off activeIndex: activeIndex is -1 both before
+  // the pin engages (normal doc flow, container should be a tight
+  // 420px wrap) AND for an instant right as the pin engages/releases
+  // (still fixed in a full-viewport frame). Sizing the container off
+  // activeIndex alone left that second case at only 420px tall while
+  // pinned, exposing the rest of the fixed frame as bare page
+  // background — the "yellow block" under the collapsed cards.
+  let pinned = false;
 
   function applyHeights(instant) {
-    // Pre-pin (-1): leave the container height unset so it stays a tight
-    // 420px wrap around the three collapsed cards, flush below the hero
-    // with no gap. Once any step is active, lock the container to the
-    // full viewport height so card-height tweens can't resize it mid-pin
-    // (that resize was what caused the earlier Card 3 jump/snap).
     gsap.set(container, {
-      height: activeIndex === -1 ? "auto" : fullH,
-      // Docks the flush collapsed stack against the bottom edge pre-pin;
-      // once a card is expanding, anchor from the top so it fills down.
+      height: pinned ? fullH : "auto",
+      // Docks the flush collapsed stack against the bottom edge when
+      // collapsed; once a card is expanding, anchor from the top so it
+      // fills down.
       justifyContent: activeIndex === -1 ? "flex-end" : "flex-start",
     });
 
@@ -194,11 +199,28 @@ function initGSAPCardStack() {
         goToStep(2);
       }
     },
+    onEnter: () => {
+      // Pin just engaged while still collapsed (activeIndex is unchanged
+      // at -1, so goToStep would no-op) — force the container to the
+      // full pinned frame so the collapsed dock has no exposed
+      // background behind/below it.
+      pinned = true;
+      applyHeights(true);
+    },
+    onEnterBack: () => {
+      pinned = true;
+      applyHeights(true);
+    },
     onLeave: () => {
-      goToStep(-1); // Past the pin: collapse back to the compact stack above the footer.
+      // Past the pin: unpin cleanly into a tight compact stack directly
+      // above the footer, cards collapsed.
+      pinned = false;
+      goToStep(-1);
     },
     onLeaveBack: () => {
-      goToStep(-1); // Scrolled back above the pin: reset to approach state.
+      // Scrolled back above the pin: reset to approach state.
+      pinned = false;
+      goToStep(-1);
     },
   });
 

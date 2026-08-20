@@ -472,6 +472,14 @@ a {
   padding: 40px 0 0;
 }
 
+.stack-section,
+.stack-container {
+  /* Only the individual cards paint a background; if either of these
+     picked one up, it would show through as a solid block filling
+     whatever part of the pinned frame isn't covered by a card. */
+  background: transparent !important;
+}
+
 .stack-section {
   position: relative;
   width: 100%;
@@ -488,7 +496,7 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  overflow: hidden;
+  overflow: hidden !important;
   contain: layout paint;
   will-change: height;
   position: relative;

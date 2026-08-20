@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>West of Spadina — Saturday, September 19</title>
+<meta name="description" content="West of Spadina is a free block-party festival taking over the neighbourhood on Saturday, September 19." />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="nav" id="siteNav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="assets/img/wos-wordmark-black.png" alt="West of Spadina" />
+    </a>
+  </div>
+</header>
+
+<!-- ============ HERO / INTRO — full-size, not pinned ============ -->
+<section class="hero-section">
+  <div class="landing-backdrop">
+    <section class="hero" id="hero">
+      <div class="hero__layer hero__layer--mid">
+        <img src="assets/img/wos-bubble-pink.svg" alt="" aria-hidden="true" />
+      </div>
+      <div class="hero__layer hero__layer--top">
+        <img src="assets/img/wos-wordmark-yellow.png" alt="West of Spadina" />
+      </div>
+
+      <div class="hero__content">
+        <a href="tickets.html" class="btn btn--yellow-pink">Get Tickets</a>
+      </div>
+    </section>
+  </div>
+
+  <div class="intro-backdrop">
+    <section class="intro">
+      <div class="container">
+        <p class="intro__copy">West of Spadina Fest transforms the neighbourhood into a one-day celebration of the businesses, venues, and creative community that make this corner of Toronto unique.</p>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- ============ EVENT STACK — pinned 3-card accordion ============ -->
+<section class="event-stack" id="bars">
+  <div class="stack-section">
+    <div class="stack-container">
+
+      <!-- Card 1: Day (Yellow) -->
+      <div class="bar bar--free stack-card card--day">
+        <div class="bar__inner">
+          <p class="bar__meta">12:00 PM – 5:00 PM</p>
+          <h2 class="bar__title">Day</h2>
+          <p class="bar__meta bar__meta--right">St. Andrew's Park +<br />Waterworks Food Hall</p>
+        </div>
+      </div>
+
+      <!-- Card 2: Night (Pink) -->
+      <div class="bar bar--paid stack-card card--night">
+        <div class="bar__inner">
+          <p class="bar__meta">4:00 PM – 10:00 PM</p>
+          <h2 class="bar__title">Night</h2>
+          <p class="bar__meta bar__meta--right">30 Maud Street</p>
+        </div>
+      </div>
+
+      <!-- Card 3: Countdown (Video) -->
+      <div class="event-stack__countdown stack-card card--countdown" id="video" data-countdown="2026-09-19T16:00:00">
+        <video
+          muted
+          loop
+          playsinline
+          preload="none"
+          poster="assets/img/content-headliner.jpg"
+          src="../Assets/Content/blockparty wide cut 1.mp4"
+        ></video>
+        <div class="event-stack__countdown-content">
+          <div class="countdown">
+            <div class="countdown__item"><strong data-days>00</strong><span>Days</span></div>
+            <div class="countdown__item"><strong data-hours>00</strong><span>Hours</span></div>
+            <div class="countdown__item"><strong data-minutes>00</strong><span>Minutes</span></div>
+            <div class="countdown__item"><strong data-seconds>00</strong><span>Seconds</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer__logo">
+    <img src="assets/img/wos-bubble-black.svg" alt="West of Spadina" />
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

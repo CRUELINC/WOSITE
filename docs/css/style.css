@@ -480,13 +480,14 @@ a {
 
 .stack-container {
   width: 100%;
-  height: calc(100vh - var(--nav-h)) !important;
-  max-height: calc(100vh - var(--nav-h)) !important;
+  /* Height is intentionally not fixed here: JS sizes it to a tight
+     420px wrap around the 3 collapsed cards pre-pin (auto), then locks
+     it to the full viewport height once the pin engages. A CSS
+     !important height would win over GSAP's inline styles and break
+     that. */
   display: flex;
   flex-direction: column;
-  /* Approach state (Step -1): collapsed cards dock against the bottom
-     edge. JS switches this to flex-start once Card 1 expands. */
-  justify-content: flex-end;
+  justify-content: flex-start;
   overflow: hidden;
   contain: layout paint;
   will-change: height;

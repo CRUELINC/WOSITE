@@ -111,29 +111,31 @@ function initGSAPCardStack() {
   if (!container || cards.length !== 3) return;
 
   const collapsedH = 140;
-  let containerH = 0;
+  let fullH = 0;
   let expandedH = 0;
 
   // Cached on load/resize only — never re-measured inside onUpdate,
   // which runs on every scroll tick and would otherwise force a
-  // layout read (thrash) on each frame.
+  // layout read (thrash) on each frame. fullH comes from the viewport,
+  // not the container's own box: pre-pin the container is intentionally
+  // only as tall as its three collapsed cards (420px), so measuring
+  // itself wouldn't give the screen-filling target height.
   function measure() {
-    containerH = container.getBoundingClientRect().height;
-    expandedH = containerH - 2 * collapsedH;
+    fullH = window.innerHeight - getNavHeight();
+    expandedH = fullH - 2 * collapsedH;
   }
 
   let activeIndex = -1; // -1 = approach state, all collapsed until scroll enters the pin
   let isAnimating = false;
 
-  function applyAlignment() {
-    // Approach state docks the collapsed stack against the bottom edge;
-    // once any card expands, the stack anchors from the top instead.
-    gsap.set(container, {
-      justifyContent: activeIndex === -1 ? "flex-end" : "flex-start",
-    });
-  }
-
   function applyHeights(instant) {
+    // Pre-pin (-1): leave the container height unset so it stays a tight
+    // 420px wrap around the three collapsed cards, flush below the hero
+    // with no gap. Once any step is active, lock the container to the
+    // full viewport height so card-height tweens can't resize it mid-pin
+    // (that resize was what caused the earlier Card 3 jump/snap).
+    gsap.set(container, { height: activeIndex === -1 ? "auto" : fullH });
+
     cards.forEach((card, i) => {
       const targetH = i === activeIndex ? expandedH : collapsedH;
       if (instant) {
@@ -153,14 +155,12 @@ function initGSAPCardStack() {
   }
 
   measure();
-  applyAlignment();
-  applyHeights(true); // Initial state: all three cards collapsed (approach mode).
+  applyHeights(true); // Initial state: all three cards collapsed, tight stack (approach mode).
 
   function goToStep(index) {
     if (index < -1 || index > 2 || index === activeIndex || isAnimating) return;
     isAnimating = true;
     activeIndex = index;
-    applyAlignment();
     applyHeights(false);
   }
 

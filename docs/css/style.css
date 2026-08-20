@@ -469,7 +469,7 @@ a {
 /* ---------------- EVENT STACK ---------------- */
 
 .event-stack {
-  padding: 40px 0 200px;
+  padding: 40px 0 0;
 }
 
 .stack-section {
@@ -715,7 +715,6 @@ a {
   background: var(--black);
   color: var(--white);
   overflow: hidden;
-  margin-top: -50px;
 }
 
 .site-footer__logo {

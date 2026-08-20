@@ -125,6 +125,14 @@ function initGSAPCardStack() {
   let activeIndex = -1; // -1 = approach state, all collapsed until scroll enters the pin
   let isAnimating = false;
 
+  function applyAlignment() {
+    // Approach state docks the collapsed stack against the bottom edge;
+    // once any card expands, the stack anchors from the top instead.
+    gsap.set(container, {
+      justifyContent: activeIndex === -1 ? "flex-end" : "flex-start",
+    });
+  }
+
   function applyHeights(instant) {
     cards.forEach((card, i) => {
       const targetH = i === activeIndex ? expandedH : collapsedH;
@@ -145,12 +153,14 @@ function initGSAPCardStack() {
   }
 
   measure();
+  applyAlignment();
   applyHeights(true); // Initial state: all three cards collapsed (approach mode).
 
   function goToStep(index) {
     if (index < -1 || index > 2 || index === activeIndex || isAnimating) return;
     isAnimating = true;
     activeIndex = index;
+    applyAlignment();
     applyHeights(false);
   }
 

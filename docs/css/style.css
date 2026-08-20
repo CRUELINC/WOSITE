@@ -484,10 +484,13 @@ a {
   max-height: calc(100vh - var(--nav-h)) !important;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  /* Approach state (Step -1): collapsed cards dock against the bottom
+     edge. JS switches this to flex-start once Card 1 expands. */
+  justify-content: flex-end;
   overflow: hidden;
   contain: layout paint;
   will-change: height;
+  position: relative;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
@@ -497,6 +500,7 @@ a {
   height: 140px;
   overflow: hidden;
   flex-shrink: 0;
+  box-sizing: border-box;
   transition: none !important;
   will-change: height;
   transform: translateZ(0);

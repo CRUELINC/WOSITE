@@ -505,10 +505,6 @@ a {
 
 .stack-card:first-child {
   flex-shrink: 0;
-  /* Pre-JS fallback so the entry frame (Day expanded, Night/Countdown
-     peeking) is correct even before initGSAPCardStack() measures and
-     sets explicit pixel heights. */
-  height: calc(100% - 280px);
 }
 
 .hero-section {

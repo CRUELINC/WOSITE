@@ -122,7 +122,7 @@ function initGSAPCardStack() {
     expandedH = containerH - 2 * collapsedH;
   }
 
-  let activeIndex = 0; // Card 1 (Yellow/Day) starts expanded — matches the pinned entry frame
+  let activeIndex = -1; // -1 = approach state, all collapsed until scroll enters the pin
   let isAnimating = false;
 
   function applyHeights(instant) {
@@ -145,10 +145,10 @@ function initGSAPCardStack() {
   }
 
   measure();
-  applyHeights(true); // Initial state: Yellow expanded, Pink & Countdown collapsed/peeking.
+  applyHeights(true); // Initial state: all three cards collapsed (approach mode).
 
   function goToStep(index) {
-    if (index < 0 || index > 2 || index === activeIndex || isAnimating) return;
+    if (index < -1 || index > 2 || index === activeIndex || isAnimating) return;
     isAnimating = true;
     activeIndex = index;
     applyHeights(false);
@@ -166,13 +166,18 @@ function initGSAPCardStack() {
       // Step 2 triggers earlier (0.60) so it has a hold buffer before
       // the section unpins at progress 1, instead of animating right
       // up to the unpin boundary and snapping mid-tween.
-      if (progress < 0.3) {
+      if (progress <= 0) {
+        goToStep(-1); // At/above the pin start, keep all collapsed.
+      } else if (progress < 0.3) {
         goToStep(0);
       } else if (progress < 0.6) {
         goToStep(1);
       } else {
         goToStep(2);
       }
+    },
+    onLeaveBack: () => {
+      goToStep(-1); // Scrolled back above the pin: reset to approach state.
     },
   });
 

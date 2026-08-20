@@ -64,6 +64,7 @@ body {
   color: var(--black);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
@@ -483,6 +484,10 @@ a {
   flex-direction: column;
   justify-content: flex-start;
   overflow: hidden;
+  contain: layout paint;
+  will-change: height;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .stack-card {
@@ -491,6 +496,9 @@ a {
   overflow: hidden;
   flex-shrink: 0;
   transition: none !important;
+  will-change: height;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .stack-card:first-child {

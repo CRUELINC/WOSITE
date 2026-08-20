@@ -101,38 +101,57 @@ function initGSAPCardStack() {
   }
   gsap.registerPlugin(ScrollTrigger);
 
+  // Prevents a burst of catch-up frames (and the resulting jank) if the
+  // tab was backgrounded or the main thread stalled right as the user
+  // scrolled into the pinned section.
+  gsap.ticker.lagSmoothing(1000, 16);
+
   const container = document.querySelector(".stack-container");
   const cards = document.querySelectorAll(".stack-card");
   if (!container || cards.length !== 3) return;
 
-  const containerH = container.getBoundingClientRect().height;
   const collapsedH = 140;
-  const expandedH = containerH - 2 * collapsedH;
+  let containerH = 0;
+  let expandedH = 0;
+
+  // Cached on load/resize only — never re-measured inside onUpdate,
+  // which runs on every scroll tick and would otherwise force a
+  // layout read (thrash) on each frame.
+  function measure() {
+    containerH = container.getBoundingClientRect().height;
+    expandedH = containerH - 2 * collapsedH;
+  }
 
   let activeIndex = 0;
   let isAnimating = false;
 
-  // Initial state: Day (Card 1) expanded; Cards 2 & 3 collapsed peeking.
-  gsap.set(cards[0], { height: expandedH });
-  gsap.set([cards[1], cards[2]], { height: collapsedH });
+  function applyHeights(instant) {
+    cards.forEach((card, i) => {
+      const targetH = i === activeIndex ? expandedH : collapsedH;
+      if (instant) {
+        gsap.set(card, { height: targetH });
+      } else {
+        gsap.to(card, {
+          height: targetH,
+          duration: 0.4,
+          ease: "power3.out",
+          overwrite: "auto",
+          onComplete: () => {
+            isAnimating = false;
+          },
+        });
+      }
+    });
+  }
+
+  measure();
+  applyHeights(true); // Initial state: Day expanded, Night & Countdown collapsed peeking.
 
   function goToStep(index) {
     if (index < 0 || index > 2 || index === activeIndex || isAnimating) return;
     isAnimating = true;
     activeIndex = index;
-
-    cards.forEach((card, i) => {
-      const targetH = i === activeIndex ? expandedH : collapsedH;
-      gsap.to(card, {
-        height: targetH,
-        duration: 0.45,
-        ease: "power2.out",
-        overwrite: "auto",
-        onComplete: () => {
-          isAnimating = false;
-        },
-      });
-    });
+    applyHeights(false);
   }
 
   ScrollTrigger.create({
@@ -152,6 +171,19 @@ function initGSAPCardStack() {
         goToStep(2);
       }
     },
+  });
+
+  // Debounced: re-measure and reapply the current step's heights on
+  // resize, then let ScrollTrigger recalculate pin/pixel boundaries
+  // against the new layout.
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      measure();
+      applyHeights(true);
+      ScrollTrigger.refresh();
+    }, 200);
   });
 }
 

@@ -12,7 +12,7 @@
 <header class="nav" id="siteNav">
   <div class="nav__inner">
     <a href="index.html" class="nav__logo">
-      <img src="assets/img/wos-wordmark-black.png" alt="West of Spadina" />
+      <img src="assets/img/wos-wordmark-black.png" alt="West of Spadina" decoding="async" />
     </a>
   </div>
 </header>
@@ -22,10 +22,14 @@
   <div class="landing-backdrop">
     <section class="hero" id="hero">
       <div class="hero__layer hero__layer--mid">
-        <img src="assets/img/wos-bubble-pink.svg" alt="" aria-hidden="true" />
+        <img src="assets/img/wos-bubble-pink.svg" alt="" aria-hidden="true" decoding="async" />
       </div>
       <div class="hero__layer hero__layer--top">
-        <img src="assets/img/wos-wordmark-yellow.png" alt="West of Spadina" />
+        <picture>
+          <source srcset="assets/img/wos-wordmark-yellow.avif" type="image/avif" />
+          <source srcset="assets/img/wos-wordmark-yellow.webp" type="image/webp" />
+          <img src="assets/img/wos-wordmark-yellow.png" alt="West of Spadina" decoding="async" />
+        </picture>
       </div>
 
       <div class="hero__content">
@@ -72,7 +76,7 @@
           muted
           loop
           playsinline
-          preload="none"
+          preload="metadata"
           poster="assets/img/content-headliner.jpg"
           src="assets/video/blockparty-loop.mp4"
         ></video>
@@ -92,7 +96,7 @@
 
 <footer class="site-footer">
   <div class="site-footer__logo">
-    <img src="assets/img/wos-bubble-black.svg" alt="West of Spadina" />
+    <img src="assets/img/wos-bubble-black.svg" alt="West of Spadina" loading="lazy" decoding="async" />
   </div>
 </footer>
 

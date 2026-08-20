@@ -134,7 +134,12 @@ function initGSAPCardStack() {
     // with no gap. Once any step is active, lock the container to the
     // full viewport height so card-height tweens can't resize it mid-pin
     // (that resize was what caused the earlier Card 3 jump/snap).
-    gsap.set(container, { height: activeIndex === -1 ? "auto" : fullH });
+    gsap.set(container, {
+      height: activeIndex === -1 ? "auto" : fullH,
+      // Docks the flush collapsed stack against the bottom edge pre-pin;
+      // once a card is expanding, anchor from the top so it fills down.
+      justifyContent: activeIndex === -1 ? "flex-end" : "flex-start",
+    });
 
     cards.forEach((card, i) => {
       const targetH = i === activeIndex ? expandedH : collapsedH;
@@ -158,7 +163,12 @@ function initGSAPCardStack() {
   applyHeights(true); // Initial state: all three cards collapsed, tight stack (approach mode).
 
   function goToStep(index) {
-    if (index < -1 || index > 2 || index === activeIndex || isAnimating) return;
+    if (index < -1 || index > 2 || index === activeIndex) return;
+    // Exiting to -1 (onLeave/onLeaveBack) must always take effect, even
+    // mid-tween on a fast scroll, so the stack never gets stuck full-screen
+    // past the footer boundary — overwrite: "auto" on the tweens below
+    // handles cutting off whatever was still in flight.
+    if (isAnimating && index !== -1) return;
     isAnimating = true;
     activeIndex = index;
     applyHeights(false);
@@ -167,24 +177,25 @@ function initGSAPCardStack() {
   ScrollTrigger.create({
     trigger: ".stack-section",
     start: "top top+=" + getNavHeight(),
-    end: "+=2400", // runway buffer so Card 3 finishes expanding well before unpin
+    end: "+=2000",
     pin: true,
     scrub: false,
-    anticipatePin: 1,
+    preventOverlaps: true,
+    fastScrollEnd: true,
     onUpdate: (self) => {
       const progress = self.progress;
-      // Step 2 triggers earlier (0.60) so it has a hold buffer before
-      // the section unpins at progress 1, instead of animating right
-      // up to the unpin boundary and snapping mid-tween.
       if (progress <= 0) {
         goToStep(-1); // At/above the pin start, keep all collapsed.
-      } else if (progress < 0.3) {
+      } else if (progress < 0.33) {
         goToStep(0);
-      } else if (progress < 0.6) {
+      } else if (progress < 0.66) {
         goToStep(1);
       } else {
         goToStep(2);
       }
+    },
+    onLeave: () => {
+      goToStep(-1); // Past the pin: collapse back to the compact stack above the footer.
     },
     onLeaveBack: () => {
       goToStep(-1); // Scrolled back above the pin: reset to approach state.

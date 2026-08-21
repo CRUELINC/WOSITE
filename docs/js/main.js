@@ -212,6 +212,7 @@ function initGSAPCardStack() {
     start: "top bottom-=" + collapsedTotalH,
     end: "+=2000",
     pin: true,
+    pinSpacing: true,
     scrub: false,
     preventOverlaps: true,
     fastScrollEnd: true,
@@ -239,10 +240,11 @@ function initGSAPCardStack() {
       applyHeights(true);
     },
     onLeave: () => {
-      // Past the pin: unpin cleanly into a tight compact stack directly
-      // above the footer, cards collapsed.
+      // Past the pin: leave Card 3 fully expanded and let the footer
+      // scroll up over it naturally, instead of shrinking it back to
+      // collapsed here (which revealed bare background before the
+      // footer actually arrived).
       pinned = false;
-      goToStep(-1);
     },
     onLeaveBack: () => {
       // Scrolled back above the pin: reset to approach state.

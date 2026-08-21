@@ -540,6 +540,14 @@ a {
 .stack-card:nth-child(3) {
   margin-top: -24px;
   z-index: 1;
+  /* Card 3 never gets an explicit height from JS — it's the sole
+     flex-grow item, so it always fills whatever space Cards 1 and 2
+     leave behind. Its bottom edge is therefore fixed at the
+     container's bottom by construction, and it's revealed purely by
+     the siblings above it shrinking, never by animating its own size
+     (which is what caused it to visibly jump before). */
+  flex: 1 1 0;
+  height: auto;
 }
 
 .hero-section {

@@ -170,7 +170,11 @@ function initGSAPCardStack() {
       });
     }
 
-    cards.forEach((card, i) => {
+    // Card 3 (index 2) is never tweened directly — it's the sole
+    // flex-grow item (see .stack-card:nth-child(3) in style.css), so it
+    // always fills whatever space cards 1/2 leave behind and its bottom
+    // edge never moves. Only cards 0 and 1 have an explicit height.
+    [cards[0], cards[1]].forEach((card, i) => {
       const targetH = i === activeIndex ? expandedH : collapsedH;
       if (instant) {
         gsap.set(card, { height: targetH });

@@ -484,12 +484,6 @@ a {
   position: relative;
   width: 100%;
   overflow: visible;
-  /* Pulls the collapsed stack up so Card 1 tucks slightly under the
-     hero's splash artwork (.intro-backdrop::before). The overlap
-     reads correctly because .intro-backdrop (z-index: 2) already
-     stacks above .event-stack (z-index: 1) — the artwork needs to
-     render on top of the cards in the overlap band, not underneath. */
-  margin-top: -60px;
 }
 
 .stack-container {
@@ -562,6 +556,16 @@ a {
   position: relative;
   width: 100%;
   min-height: 100vh;
+  /* Bleeds the hero's splash artwork down over the collapsed card
+     stack during approach. Deliberately placed here rather than as a
+     margin-top on .stack-section (the pinned trigger element) — a
+     negative margin on the pin target gets hoisted onto GSAP's
+     auto-generated pin-spacer, and that hoist landing in the same
+     refresh pass that computes the trigger's start position produced
+     a one-frame drift where the section visibly slid before locking
+     into place. This achieves the same visual overlap without
+     touching the pinned element at all. */
+  margin-bottom: -60px;
 }
 
 .bar {

@@ -143,6 +143,19 @@ function initGSAPCardStack() {
 
   let activeIndex = -1; // -1 = collapsed (approach, collapsed-while-pinned, or exited)
   let isAnimating = false;
+  // The container and the two tweened cards used to animate as three
+  // independent gsap.to() calls, each with its own overwrite: "auto".
+  // On a slow, hesitant scroll that flips direction near a step
+  // threshold, goToStep() can fire again before the previous tween
+  // finishes, and "auto" only overwrites conflicting tweens on the
+  // *same* target — so the container's tween could get interrupted/
+  // restarted independently of the cards' tweens (or vice versa),
+  // leaving them settled at different points: cards fully collapsed
+  // to 140px while the container was still mid-tween at a much taller
+  // height, showing as blank space above the cards. Driving all three
+  // off one timeline makes them start, restart, and complete as a
+  // single atomic unit.
+  let heightTimeline = null;
 
   function applyHeights(instant) {
     // Always an explicit pixel height, pinned or not: Card 3 has no
@@ -161,37 +174,38 @@ function initGSAPCardStack() {
     const targetContainerH = expanding ? fullH : collapsedTotalH;
     const targetY = expanding ? expandedShiftY : 0;
 
-    if (instant) {
-      gsap.set(container, { height: targetContainerH, y: targetY });
-    } else {
-      gsap.to(container, {
-        height: targetContainerH,
-        y: targetY,
-        duration: 0.4,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
+    // Always tear down whatever was previously in flight before
+    // setting new values/starting a new tween, so a rapid direction
+    // change can never leave the container and cards mid-transition
+    // against two different old targets.
+    if (heightTimeline) {
+      heightTimeline.kill();
+      heightTimeline = null;
     }
 
-    // Card 3 (index 2) is never tweened directly — it's the sole
-    // flex-grow item (see .stack-card:nth-child(3) in style.css), so it
-    // always fills whatever space cards 1/2 leave behind and its bottom
-    // edge never moves. Only cards 0 and 1 have an explicit height.
+    if (instant) {
+      gsap.set(container, { height: targetContainerH, y: targetY });
+      // Card 3 (index 2) is never tweened directly — it's the sole
+      // flex-grow item (see .stack-card:nth-child(3) in style.css), so
+      // it always fills whatever space cards 1/2 leave behind and its
+      // bottom edge never moves. Only cards 0 and 1 have an explicit
+      // height.
+      [cards[0], cards[1]].forEach((card, i) => {
+        gsap.set(card, { height: i === activeIndex ? expandedH : collapsedH });
+      });
+      return;
+    }
+
+    heightTimeline = gsap.timeline({
+      onComplete: () => {
+        isAnimating = false;
+        heightTimeline = null;
+      },
+    });
+    heightTimeline.to(container, { height: targetContainerH, y: targetY, duration: 0.4, ease: "power3.out" }, 0);
     [cards[0], cards[1]].forEach((card, i) => {
       const targetH = i === activeIndex ? expandedH : collapsedH;
-      if (instant) {
-        gsap.set(card, { height: targetH });
-      } else {
-        gsap.to(card, {
-          height: targetH,
-          duration: 0.4,
-          ease: "power3.out",
-          overwrite: "auto",
-          onComplete: () => {
-            isAnimating = false;
-          },
-        });
-      }
+      heightTimeline.to(card, { height: targetH, duration: 0.4, ease: "power3.out" }, 0);
     });
   }
 
@@ -202,8 +216,8 @@ function initGSAPCardStack() {
     if (index < -1 || index > 2 || index === activeIndex) return;
     // Exiting to -1 (onLeave/onLeaveBack) must always take effect, even
     // mid-tween on a fast scroll, so the stack never gets stuck full-screen
-    // past the footer boundary — overwrite: "auto" on the tweens below
-    // handles cutting off whatever was still in flight.
+    // past the footer boundary — applyHeights() kills whatever timeline
+    // was still in flight before starting the new one.
     if (isAnimating && index !== -1) return;
     isAnimating = true;
     activeIndex = index;

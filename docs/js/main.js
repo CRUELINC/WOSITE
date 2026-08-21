@@ -247,13 +247,15 @@ function initGSAPCardStack() {
       heightTimeline = null;
     }
 
-    if (expanding) {
-      applyColumnLayout();
-    } else {
-      applyRowLayout();
-    }
-
     if (instant) {
+      // Instant: safe to swap the row/column layout and set the final
+      // size together — no intermediate frame is ever rendered, so
+      // there's no window where they could be out of sync.
+      if (expanding) {
+        applyColumnLayout();
+      } else {
+        applyRowLayout();
+      }
       gsap.set(container, { height: targetContainerH, y: targetY });
       // Card 3 (index 2) is never tweened directly in the expanded
       // (column) layout — it's the sole flex-grow item there, so it
@@ -268,8 +270,30 @@ function initGSAPCardStack() {
       return;
     }
 
+    // Animated: row<->column can't itself be tweened, so one side of
+    // this transition has to snap discretely — but WHEN it snaps
+    // matters. Row->column (expanding) snaps immediately, so the
+    // height tween below plays out within the correct (vertical) form
+    // from the first frame. Column->row (collapsing) is the opposite:
+    // snapping the cards to their tiny final row size immediately,
+    // while the container is still mid-tween shrinking from a much
+    // taller height, left them sitting inside a box far bigger than
+    // their own content for the whole 0.4s — a big gap around them.
+    // Deferring the snap to onComplete instead keeps the cards in
+    // their current (larger) form, simply clipped by the container's
+    // overflow: hidden as it shrinks, matching how every other
+    // collapse in this component already looks — then swaps to the
+    // correct row layout in the same instant the container finishes
+    // shrinking to meet it.
+    if (expanding) {
+      applyColumnLayout();
+    }
+
     heightTimeline = gsap.timeline({
       onComplete: () => {
+        if (!expanding) {
+          applyRowLayout();
+        }
         isAnimating = false;
         heightTimeline = null;
       },

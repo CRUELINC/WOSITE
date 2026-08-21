@@ -548,6 +548,8 @@ a {
      (which is what caused it to visibly jump before). */
   flex: 1 1 0;
   height: auto;
+  min-height: 140px;
+  background: #000;
 }
 
 .hero-section {

@@ -141,24 +141,27 @@ function initGSAPCardStack() {
     expandedShiftY = -(fullH - collapsedTotalH);
   }
 
-  let activeIndex = -1; // -1 = collapsed (approach, or collapsed-while-pinned)
+  let activeIndex = -1; // -1 = collapsed (approach, collapsed-while-pinned, or exited)
   let isAnimating = false;
-  // Whether ScrollTrigger currently has the section pinned. Height is
-  // keyed off this, not off activeIndex: activeIndex is -1 both before
-  // the pin engages (normal doc flow, container should be a tight
-  // 420px wrap) AND while collapsed-but-pinned (still fixed, at the
-  // bottom-flush 420px position).
-  let pinned = false;
 
   function applyHeights(instant) {
-    const expanding = pinned && activeIndex !== -1;
-    const targetContainerH = pinned ? (expanding ? fullH : collapsedTotalH) : "auto";
+    // Always an explicit pixel height, pinned or not: Card 3 has no
+    // height of its own (flex: 1 1 0, see style.css) and fills whatever
+    // the container doesn't otherwise use, but a flex-grow item with a
+    // zero basis only grows into a *definite*-size container. Sizing
+    // this to "auto" while unpinned (as a previous version did) left
+    // nothing for Card 3 to grow into, so it silently collapsed to 0
+    // height and vanished. Whether we're actually pinned right now
+    // doesn't change what the container's height/position should be —
+    // only whether any card is expanded does (activeIndex !== -1),
+    // including the moment right after unpinning, where activeIndex is
+    // deliberately left at 2 so Card 3 stays fully expanded (there's no
+    // onLeave handler resetting it — see the ScrollTrigger config below).
+    const expanding = activeIndex !== -1;
+    const targetContainerH = expanding ? fullH : collapsedTotalH;
     const targetY = expanding ? expandedShiftY : 0;
 
-    // "auto" (the not-pinned approach/exit states) can't be tweened, so
-    // those transitions always snap instantly; the pinned 420<->fullH
-    // + compensating shift can animate smoothly alongside the cards.
-    if (instant || targetContainerH === "auto") {
+    if (instant) {
       gsap.set(container, { height: targetContainerH, y: targetY });
     } else {
       gsap.to(container, {
@@ -217,19 +220,6 @@ function initGSAPCardStack() {
     preventOverlaps: true,
     fastScrollEnd: true,
     onUpdate: (self) => {
-      // Read pin state straight from the ScrollTrigger instance rather
-      // than trusting onEnter to have already run first: on a fast
-      // scroll that crosses the pin threshold in one tick, onUpdate can
-      // fire before onEnter within the same batch, and goToStep() would
-      // then compute heights against a stale `pinned` value — Card 3
-      // renders mid-transition (cut off) until something else corrects
-      // it, reading as a visible snap. If pinned state just flipped,
-      // force an instant reapply even if activeIndex hasn't changed
-      // (goToStep() alone would skip that case, since its early-exit
-      // guard only checks activeIndex).
-      const wasPinned = pinned;
-      pinned = self.isActive;
-      if (pinned !== wasPinned) applyHeights(true);
       const progress = self.progress;
       if (progress <= 0) {
         goToStep(-1); // At/above the pin start, keep all collapsed.
@@ -241,27 +231,12 @@ function initGSAPCardStack() {
         goToStep(2);
       }
     },
-    onEnter: () => {
-      // Pin just engaged while still collapsed (activeIndex is unchanged
-      // at -1, so goToStep would no-op) — apply the pinned collapsed
-      // height/position explicitly so the dock is correct from frame one.
-      pinned = true;
-      applyHeights(true);
-    },
-    onEnterBack: () => {
-      pinned = true;
-      applyHeights(true);
-    },
-    onLeave: () => {
-      // Past the pin: leave Card 3 fully expanded and let the footer
-      // scroll up over it naturally, instead of shrinking it back to
-      // collapsed here (which revealed bare background before the
-      // footer actually arrived).
-      pinned = false;
-    },
+    // No onLeave: leave Card 3 fully expanded and let the footer scroll
+    // up over it naturally, instead of shrinking it back to collapsed
+    // here (which revealed bare background before the footer actually
+    // arrived).
     onLeaveBack: () => {
       // Scrolled back above the pin: reset to approach state.
-      pinned = false;
       goToStep(-1);
     },
   });

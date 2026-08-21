@@ -511,25 +511,27 @@ a {
   overflow: hidden;
   flex-shrink: 0;
   box-sizing: border-box;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  /* Cast a shadow onto the card underneath at the overlap seam. */
-  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  /* Cast a shadow downward onto the card underneath at the overlap seam. */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   transition: none !important;
   will-change: height, margin-top;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
 
-.stack-card:first-child {
+/* Card 2 (Pink) slides up underneath Card 1 (Yellow); Card 3 (Video)
+   slides up underneath Card 2. Descending z-index so each card sits
+   above the one below it, which now overlaps up and under it. */
+.stack-card:nth-child(1) {
   flex-shrink: 0;
   margin-top: 0;
-  z-index: 1;
+  z-index: 3;
 }
 
-/* Card 2 (Pink) overlaps Card 1 (Yellow); Card 3 (Video) overlaps
-   Card 2. Ascending z-index so each overlapping card renders on top
-   of the one it overhangs, casting its shadow onto it. */
 .stack-card:nth-child(2) {
   margin-top: -24px;
   z-index: 2;
@@ -537,7 +539,7 @@ a {
 
 .stack-card:nth-child(3) {
   margin-top: -24px;
-  z-index: 3;
+  z-index: 1;
 }
 
 .hero-section {

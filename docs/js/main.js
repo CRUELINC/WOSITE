@@ -217,6 +217,19 @@ function initGSAPCardStack() {
     preventOverlaps: true,
     fastScrollEnd: true,
     onUpdate: (self) => {
+      // Read pin state straight from the ScrollTrigger instance rather
+      // than trusting onEnter to have already run first: on a fast
+      // scroll that crosses the pin threshold in one tick, onUpdate can
+      // fire before onEnter within the same batch, and goToStep() would
+      // then compute heights against a stale `pinned` value — Card 3
+      // renders mid-transition (cut off) until something else corrects
+      // it, reading as a visible snap. If pinned state just flipped,
+      // force an instant reapply even if activeIndex hasn't changed
+      // (goToStep() alone would skip that case, since its early-exit
+      // guard only checks activeIndex).
+      const wasPinned = pinned;
+      pinned = self.isActive;
+      if (pinned !== wasPinned) applyHeights(true);
       const progress = self.progress;
       if (progress <= 0) {
         goToStep(-1); // At/above the pin start, keep all collapsed.
@@ -264,6 +277,19 @@ function initGSAPCardStack() {
       applyHeights(true);
       ScrollTrigger.refresh();
     }, 200);
+  });
+
+  // This runs on DOMContentLoaded, before images/video/fonts have
+  // necessarily finished loading — if any of those shift the page's
+  // layout afterward, ScrollTrigger's cached trigger position goes
+  // stale and the pin can engage at the wrong scroll offset, which
+  // also reads as a snap. Refresh once now and again once everything
+  // has actually loaded.
+  ScrollTrigger.refresh();
+  window.addEventListener("load", () => {
+    measure();
+    applyHeights(true);
+    ScrollTrigger.refresh();
   });
 }
 

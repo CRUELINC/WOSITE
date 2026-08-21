@@ -111,7 +111,12 @@ function initGSAPCardStack() {
   if (!container || cards.length !== 3) return;
 
   const collapsedH = 140;
-  const collapsedTotalH = collapsedH * 3;
+  // Cards 2 and 3 have a -24px margin-top (see .stack-card:nth-child(2/3)
+  // in style.css) so they physically overlap the card above them, like a
+  // layered deck. That shrinks the real on-screen height of both the
+  // collapsed 3-card stack and any expanded frame by one overlap per seam.
+  const overlap = 24;
+  const collapsedTotalH = collapsedH * 3 - overlap * 2;
   let fullH = 0;
   let expandedH = 0;
   // How far the container needs to slide up, once any card is
@@ -128,10 +133,11 @@ function initGSAPCardStack() {
   // which runs on every scroll tick and would otherwise force a
   // layout read (thrash) on each frame. fullH comes from the viewport,
   // not the container's own box: while collapsed, the container is
-  // intentionally only as tall as its three cards (420px).
+  // intentionally only as tall as the three overlapping cards
+  // (collapsedTotalH).
   function measure() {
     fullH = window.innerHeight - getNavHeight();
-    expandedH = fullH - 2 * collapsedH;
+    expandedH = fullH - 2 * (collapsedH - overlap);
     expandedShiftY = -(fullH - collapsedTotalH);
   }
 
@@ -199,7 +205,7 @@ function initGSAPCardStack() {
 
   ScrollTrigger.create({
     trigger: ".stack-section",
-    start: "top bottom-=" + collapsedH * 3,
+    start: "top bottom-=" + collapsedTotalH,
     end: "+=2000",
     pin: true,
     scrub: false,

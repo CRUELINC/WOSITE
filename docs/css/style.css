@@ -637,6 +637,23 @@ a {
   text-shadow: 0.3px 0 currentColor, -0.3px 0 currentColor;
 }
 
+/* Day/Night at 50% width in the collapsed row layout — the sizes
+   above are tuned for a full-width card and overlap/crowd at half
+   that. */
+.stack-container.is-row-collapsed .bar__inner {
+  padding: 0 1rem;
+  gap: 8px;
+}
+
+.stack-container.is-row-collapsed .bar__meta {
+  font-size: clamp(0.65rem, 1.6vw, 0.85rem);
+  line-height: 1.25;
+}
+
+.stack-container.is-row-collapsed .bar__title {
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+}
+
 /* ---------------- COUNTDOWN ---------------- */
 
 .event-stack__countdown {

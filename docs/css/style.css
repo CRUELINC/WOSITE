@@ -488,19 +488,19 @@ a {
 
 .stack-container {
   width: 100%;
-  /* Height is intentionally not fixed here: JS sizes it to a tight
-     420px wrap around the 3 collapsed cards pre-pin (auto), then locks
-     it to the full viewport height once the pin engages. A CSS
-     !important height would win over GSAP's inline styles and break
-     that. */
+  /* Height/position are intentionally not fixed here: JS sizes this to
+     a tight 420px wrap around the 3 collapsed cards while unpinned,
+     locks it to the full viewport height once a card is expanding, and
+     applies a compensating translateY so it stays anchored to the
+     bottom of the pinned frame while collapsed and anchored from the
+     navbar down while expanding. A CSS !important height would win
+     over GSAP's inline styles and break that. */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   overflow: hidden !important;
   contain: layout paint;
-  will-change: height;
+  will-change: height, transform;
   position: relative;
-  transform: translateZ(0);
   backface-visibility: hidden;
 }
 

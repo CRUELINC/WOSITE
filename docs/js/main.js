@@ -111,18 +111,28 @@ function initGSAPCardStack() {
   if (!container || cards.length !== 3) return;
 
   const collapsedH = 140;
+  const collapsedTotalH = collapsedH * 3;
   let fullH = 0;
   let expandedH = 0;
+  // How far the container needs to slide up, once any card is
+  // expanding, to keep its bottom edge anchored at the same screen
+  // position it had while collapsed. The pin engages as early as
+  // possible — the instant the collapsed 420px stack would first sit
+  // flush at the bottom of the viewport — so GSAP fixes the section at
+  // that (low) natural position. Growing the container to fullH from
+  // there would just overflow off the bottom of the screen unless we
+  // also shift it up by the height delta, which is what this offset is.
+  let expandedShiftY = 0;
 
   // Cached on load/resize only — never re-measured inside onUpdate,
   // which runs on every scroll tick and would otherwise force a
   // layout read (thrash) on each frame. fullH comes from the viewport,
-  // not the container's own box: pre-pin the container is intentionally
-  // only as tall as its three collapsed cards (420px), so measuring
-  // itself wouldn't give the screen-filling target height.
+  // not the container's own box: while collapsed, the container is
+  // intentionally only as tall as its three cards (420px).
   function measure() {
     fullH = window.innerHeight - getNavHeight();
     expandedH = fullH - 2 * collapsedH;
+    expandedShiftY = -(fullH - collapsedTotalH);
   }
 
   let activeIndex = -1; // -1 = collapsed (approach, or collapsed-while-pinned)
@@ -130,21 +140,29 @@ function initGSAPCardStack() {
   // Whether ScrollTrigger currently has the section pinned. Height is
   // keyed off this, not off activeIndex: activeIndex is -1 both before
   // the pin engages (normal doc flow, container should be a tight
-  // 420px wrap) AND for an instant right as the pin engages/releases
-  // (still fixed in a full-viewport frame). Sizing the container off
-  // activeIndex alone left that second case at only 420px tall while
-  // pinned, exposing the rest of the fixed frame as bare page
-  // background — the "yellow block" under the collapsed cards.
+  // 420px wrap) AND while collapsed-but-pinned (still fixed, at the
+  // bottom-flush 420px position).
   let pinned = false;
 
   function applyHeights(instant) {
-    gsap.set(container, {
-      height: pinned ? fullH : "auto",
-      // Docks the flush collapsed stack against the bottom edge when
-      // collapsed; once a card is expanding, anchor from the top so it
-      // fills down.
-      justifyContent: activeIndex === -1 ? "flex-end" : "flex-start",
-    });
+    const expanding = pinned && activeIndex !== -1;
+    const targetContainerH = pinned ? (expanding ? fullH : collapsedTotalH) : "auto";
+    const targetY = expanding ? expandedShiftY : 0;
+
+    // "auto" (the not-pinned approach/exit states) can't be tweened, so
+    // those transitions always snap instantly; the pinned 420<->fullH
+    // + compensating shift can animate smoothly alongside the cards.
+    if (instant || targetContainerH === "auto") {
+      gsap.set(container, { height: targetContainerH, y: targetY });
+    } else {
+      gsap.to(container, {
+        height: targetContainerH,
+        y: targetY,
+        duration: 0.4,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
+    }
 
     cards.forEach((card, i) => {
       const targetH = i === activeIndex ? expandedH : collapsedH;
@@ -181,7 +199,7 @@ function initGSAPCardStack() {
 
   ScrollTrigger.create({
     trigger: ".stack-section",
-    start: "top top+=" + getNavHeight(),
+    start: "top bottom-=" + collapsedH * 3,
     end: "+=2000",
     pin: true,
     scrub: false,
@@ -201,9 +219,8 @@ function initGSAPCardStack() {
     },
     onEnter: () => {
       // Pin just engaged while still collapsed (activeIndex is unchanged
-      // at -1, so goToStep would no-op) — force the container to the
-      // full pinned frame so the collapsed dock has no exposed
-      // background behind/below it.
+      // at -1, so goToStep would no-op) — apply the pinned collapsed
+      // height/position explicitly so the dock is correct from frame one.
       pinned = true;
       applyHeights(true);
     },

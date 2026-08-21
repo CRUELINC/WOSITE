@@ -224,37 +224,86 @@ function initGSAPCardStack() {
     applyHeights(false);
   }
 
+  // The pin's own scroll distance for the 3 expand steps.
+  const stepDistance = 2000;
+
+  // GSAP's pin-spacer reserves scroll room based on the section's
+  // *collapsed* height (collapsedTotalH) at refresh time, plus the pin's
+  // scroll distance — it has no idea the pin visually grows up to fullH
+  // via our translateY trick. That gap between "reserved" and "visually
+  // reached" only matters at the moment of unpinning: if we were still
+  // expanded right up until onLeave, the section would hand off from
+  // "pinned at fullH, nav-anchored" straight into normal flow sized for
+  // collapsedTotalH, landing in the wrong spot with no continuity.
+  //
+  // The fix: extend the pin by exactly that gap (collapseDistance) and
+  // spend it on a smooth, *animated* collapse back to collapsedTotalH
+  // while STILL pinned — mirroring how the very first expand (step 0)
+  // animates smoothly because both its start and end states are pinned.
+  // By the real end of the pin, the section is already collapsed and
+  // already sitting where collapsedTotalH naturally rests, so handing
+  // off to normal flow is seamless.
+  function getTotalDistance() {
+    return stepDistance + Math.abs(expandedShiftY);
+  }
+
+  // True while onUpdate is driving the final-stretch collapse directly
+  // off scroll position (see below) rather than through goToStep()'s
+  // fixed-duration tween. A time-based tween there would fully finish
+  // in 0.4s and then just sit still for however much of the remaining
+  // scroll distance the user takes to get through it — on a slow
+  // scroll that can read as the page freezing rather than progressing.
+  // Scrubbing it 1:1 with scroll keeps it visibly responsive the whole
+  // way, the same way normal (non-pinned) scrolling always is.
+  let inFinalCollapseZone = false;
+
   ScrollTrigger.create({
     trigger: ".stack-section",
     start: "top bottom-=" + collapsedTotalH,
-    end: "+=2000",
+    end: () => "+=" + getTotalDistance(),
     pin: true,
     pinSpacing: true,
     scrub: false,
     preventOverlaps: true,
     fastScrollEnd: true,
     onUpdate: (self) => {
-      const progress = self.progress;
-      if (progress <= 0) {
+      const px = self.progress * getTotalDistance();
+      if (px <= 0) {
+        inFinalCollapseZone = false;
         goToStep(-1); // At/above the pin start, keep all collapsed.
-      } else if (progress < 0.33) {
+      } else if (px < stepDistance * 0.33) {
+        inFinalCollapseZone = false;
         goToStep(0);
-      } else if (progress < 0.66) {
+      } else if (px < stepDistance * 0.66) {
+        inFinalCollapseZone = false;
         goToStep(1);
-      } else {
+      } else if (px < stepDistance) {
+        inFinalCollapseZone = false;
         goToStep(2);
+      } else {
+        // Final stretch: cards 0/1 are already collapsed (activeIndex
+        // was 2, which targets collapsedH for both of them already) —
+        // only the container's height/y need to move, and Card 3
+        // (flex-grow) shrinks automatically as the container does.
+        if (heightTimeline) {
+          heightTimeline.kill();
+          heightTimeline = null;
+        }
+        activeIndex = -1;
+        isAnimating = false;
+        inFinalCollapseZone = true;
+        const collapseDist = Math.max(1, getTotalDistance() - stepDistance);
+        const t = Math.min(1, (px - stepDistance) / collapseDist);
+        gsap.set(container, {
+          height: fullH + (collapsedTotalH - fullH) * t,
+          y: expandedShiftY * (1 - t),
+        });
       }
     },
     onLeave: () => {
-      // Past the pin: collapse back to the compact 3-card stack so it
-      // sits above the footer instead of staying full-screen.
+      // Safety net only — activeIndex should already be -1 by now from
+      // the final onUpdate zone above, so this is normally a no-op.
       goToStep(-1);
-    },
-    onEnterBack: () => {
-      // Scrolling back UP from the footer into the pin: re-expand
-      // Card 3, matching where progress already is at that point
-      // (the very end of the pin's scroll range).
-      goToStep(2);
     },
     onLeaveBack: () => {
       // Scrolled back above the pin: reset to approach state.
@@ -282,10 +331,46 @@ function initGSAPCardStack() {
   // also reads as a snap. Refresh once now and again once everything
   // has actually loaded.
   ScrollTrigger.refresh();
-  window.addEventListener("load", () => {
+  window.addEventListener("load", refreshAll);
+
+  // window.load doesn't cover every case — the countdown video only
+  // has preload="metadata", so on a real network connection it can
+  // finish loading (and settle the page's layout) well after
+  // window.load already fired. A ResizeObserver on the document
+  // catches that and any other late layout shift generically, instead
+  // of trying to enumerate every asset that might cause one.
+  function refreshAll() {
     measure();
     applyHeights(true);
     ScrollTrigger.refresh();
+  }
+  let observerTimer;
+  const layoutObserver = new ResizeObserver(() => {
+    clearTimeout(observerTimer);
+    observerTimer = setTimeout(refreshAll, 150);
+  });
+  layoutObserver.observe(document.documentElement);
+
+  // Defense in depth: if the container's rendered height ever drifts
+  // from what the current step calls for — whatever the cause — snap
+  // it back on the very next scroll tick rather than leaving it stuck
+  // out of sync until something else happens to trigger a refresh.
+  // Only checked while heightTimeline is idle: mid-tween, the height is
+  // *intentionally* somewhere between the collapsed and expanded values
+  // for ~0.4s on every legitimate step change — checking against the
+  // final target during that window would flag every normal transition
+  // as "drifted" and force-snap it, killing the animation outright.
+  ScrollTrigger.create({
+    trigger: ".stack-section",
+    start: "top bottom",
+    end: "bottom top",
+    onUpdate: () => {
+      if (heightTimeline || inFinalCollapseZone) return;
+      const expected = activeIndex === -1 ? collapsedTotalH : fullH;
+      if (Math.abs(container.getBoundingClientRect().height - expected) > 2) {
+        applyHeights(true);
+      }
+    },
   });
 }
 

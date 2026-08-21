@@ -231,10 +231,17 @@ function initGSAPCardStack() {
         goToStep(2);
       }
     },
-    // No onLeave: leave Card 3 fully expanded and let the footer scroll
-    // up over it naturally, instead of shrinking it back to collapsed
-    // here (which revealed bare background before the footer actually
-    // arrived).
+    onLeave: () => {
+      // Past the pin: collapse back to the compact 3-card stack so it
+      // sits above the footer instead of staying full-screen.
+      goToStep(-1);
+    },
+    onEnterBack: () => {
+      // Scrolling back UP from the footer into the pin: re-expand
+      // Card 3, matching where progress already is at that point
+      // (the very end of the pin's scroll range).
+      goToStep(2);
+    },
     onLeaveBack: () => {
       // Scrolled back above the pin: reset to approach state.
       goToStep(-1);

@@ -484,6 +484,12 @@ a {
   position: relative;
   width: 100%;
   overflow: visible;
+  /* Pulls the collapsed stack up so Card 1 tucks slightly under the
+     hero's splash artwork (.intro-backdrop::before). The overlap
+     reads correctly because .intro-backdrop (z-index: 2) already
+     stacks above .event-stack (z-index: 1) — the artwork needs to
+     render on top of the cards in the overlap band, not underneath. */
+  margin-top: -60px;
 }
 
 .stack-container {

@@ -4,7 +4,6 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   initNav();
-  initNavContrast();
   initFaq();
   initTicketsCardVideo();
   initCountdown();
@@ -27,53 +26,6 @@ function initNav() {
       a.addEventListener("click", () => links.classList.remove("is-open"))
     );
   }
-}
-
-/* ---------------- NAV CONTRAST ----------------
-   The nav has no background of its own, so its logo/links switch to
-   white whenever a dark section (video, footer) sits behind it. */
-
-function initNavContrast() {
-  const nav = document.getElementById("siteNav");
-  if (!nav) return;
-
-  const darkSections = document.querySelectorAll(".card--tickets, .site-footer");
-  if (!darkSections.length) return;
-
-  const logo = nav.querySelector(".nav__logo img");
-  const active = new Set();
-
-  const setState = (isDark) => {
-    nav.classList.toggle("nav--on-dark", isDark);
-    if (logo) {
-      logo.src = isDark
-        ? "assets/img/wos-wordmark-white.webp"
-        : "assets/img/wos-wordmark-black.webp";
-    }
-  };
-
-  let observer;
-
-  const build = () => {
-    if (observer) observer.disconnect();
-    active.clear();
-    const navH = nav.offsetHeight;
-    const bottomMargin = Math.max(window.innerHeight - navH - 1, 0);
-    observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) active.add(entry.target);
-          else active.delete(entry.target);
-        });
-        setState(active.size > 0);
-      },
-      { rootMargin: `-${navH}px 0px -${bottomMargin}px 0px`, threshold: 0 }
-    );
-    darkSections.forEach((el) => observer.observe(el));
-  };
-
-  build();
-  window.addEventListener("resize", build);
 }
 
 /* ---------------- TICKETS CARD VIDEO ----------------

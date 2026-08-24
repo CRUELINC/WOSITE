@@ -158,6 +158,32 @@ a {
   background: transparent;
 }
 
+/* Progressive blur/fade to white behind the nav, so the logo and
+   countdown stay readable over whatever's scrolling underneath
+   without needing a hard-edged solid bar. Extends a bit past the
+   nav's own height (bottom: -50%) for a softer falloff, and the
+   mask-image fades the blur itself out (not just the white tint) —
+   without it, backdrop-filter would cut off sharply at the gradient's
+   edge instead of tapering away. */
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  bottom: -50%;
+  z-index: -1;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(255, 255, 255, 0.5) 45%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 100%);
+  pointer-events: none;
+}
+
 .nav__inner {
   position: relative;
   width: 100%;
@@ -186,21 +212,16 @@ a {
   width: auto;
 }
 
-/* Colour is plain black/white — the same two-state swap driven by
-   .nav--on-dark as the logo and links below, rather than the pink
-   used in the (now-removed) hero countdown, so it stays legible over
-   every section the nav can be pinned above (bright yellow/pink cards
-   included, where pink-on-pink would vanish). */
+/* Plain black — legible over every section the nav can be pinned
+   above now that the progressive blur/fade (see .nav::before above)
+   always lightens whatever's directly behind it, rather than the pink
+   used in the (now-removed) hero countdown or the old black/white
+   swap this used to need. */
 .nav__countdown {
   display: flex;
   align-items: baseline;
   gap: clamp(10px, 1.6vw, 20px);
   color: var(--black);
-  transition: color 0.3s ease;
-}
-
-.nav--on-dark .nav__countdown {
-  color: var(--white);
 }
 
 .nav__countdown-item {
@@ -250,10 +271,6 @@ a {
   transition: color 0.3s ease;
 }
 
-.nav--on-dark .nav__links a:not(.btn) {
-  color: var(--white);
-}
-
 .nav__links a:not(.btn)::after {
   content: "";
   position: absolute;
@@ -291,10 +308,6 @@ a {
   background: var(--black);
   border-radius: 2px;
   transition: background 0.3s ease;
-}
-
-.nav--on-dark .nav__burger span {
-  background: var(--white);
 }
 
 /* ---------------- LANDING BACKDROP ---------------- */

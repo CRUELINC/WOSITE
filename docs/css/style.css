@@ -874,6 +874,13 @@ a {
 .bar--tickets {
   background: linear-gradient(160deg, #3c0a3c, #7b1189);
   color: var(--white);
+  /* Last card in the stack -- nothing below it to overhang, so unlike
+     Day/Night it also gets rounded bottom corners and a downward
+     shadow of its own, on top of the shared upward one at its top
+     seam with Night. */
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 /* Unlike Day/Night's illustrations, the Tickets card's video is the

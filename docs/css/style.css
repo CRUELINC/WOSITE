@@ -1307,6 +1307,15 @@ a {
 }
 
 @media (max-width: 720px) {
+  /* 75vh was tuned against the desktop hero, where the WOS graphic
+     fills much more of that space -- on a narrow/tall mobile
+     viewport it's comparatively small, leaving a big empty gap before
+     the date/CTA below. Pulling this up brings them closer to the
+     logo instead of stranding them near the bottom of the screen. */
+  .hero__content {
+    margin-top: 56vh;
+  }
+
   /* Lighter and smaller on narrow cards -- the bold stroke treatment
      (tuned for a wide single-line desktop layout) reads as too heavy
      once this text is wrapping across 2-4 lines in a much narrower

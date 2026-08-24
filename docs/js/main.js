@@ -116,30 +116,25 @@ function initGSAPCardStack() {
   // layered deck. That shrinks the real on-screen height of both the
   // collapsed 3-card stack and any expanded frame by one overlap per seam.
   const overlap = 24;
-  // The -1 ("nothing expanded") state uses a completely different
-  // layout from the expanded states: Day/Night side by side, Video as
-  // a full-width bar underneath — not the vertical overlapping deck.
-  const rowDayNightH = 180;
-  const rowVideoH = 100;
-  const collapsedTotalH = rowDayNightH + rowVideoH;
+  const collapsedTotalH = collapsedH * 3 - overlap * 2;
   let fullH = 0;
   let expandedH = 0;
   // How far the container needs to slide up, once any card is
   // expanding, to keep its bottom edge anchored at the same screen
   // position it had while collapsed. The pin engages as early as
-  // possible — the instant the collapsed (row-layout) stack would
-  // first sit flush at the bottom of the viewport — so GSAP fixes the
-  // section at that (low) natural position. Growing the container to
-  // fullH from there would just overflow off the bottom of the screen
-  // unless we also shift it up by the height delta, which is what this
-  // offset is.
+  // possible — the instant the collapsed 420px stack would first sit
+  // flush at the bottom of the viewport — so GSAP fixes the section at
+  // that (low) natural position. Growing the container to fullH from
+  // there would just overflow off the bottom of the screen unless we
+  // also shift it up by the height delta, which is what this offset is.
   let expandedShiftY = 0;
 
   // Cached on load/resize only — never re-measured inside onUpdate,
   // which runs on every scroll tick and would otherwise force a
   // layout read (thrash) on each frame. fullH comes from the viewport,
   // not the container's own box: while collapsed, the container is
-  // intentionally only as tall as the row layout (collapsedTotalH).
+  // intentionally only as tall as the three overlapping cards
+  // (collapsedTotalH).
   function measure() {
     fullH = window.innerHeight - getNavHeight();
     expandedH = fullH - 2 * (collapsedH - overlap);
@@ -162,78 +157,16 @@ function initGSAPCardStack() {
   // single atomic unit.
   let heightTimeline = null;
 
-  // Lays out cards 0/1 (Day/Night) side by side and card 2 (Video) as a
-  // full-width bar underneath, for the -1 ("nothing expanded") state.
-  // Row/column direction and each card's width/margin/flex role can't
-  // be smoothly tweened between this and the vertical deck layout below
-  // (flex-direction isn't animatable, and a mid-morph width/direction
-  // change reads as broken rather than smooth either way) — set
-  // instantly, always, even when the height/position change around it
-  // animates.
-  function applyRowLayout() {
-    // .bar__meta/.bar__title are sized with viewport-width-based
-    // clamp()s (see style.css) tuned for a full-width card — at 50%
-    // width they overflow/overlap. This class scopes smaller sizing
-    // to just this layout; it's a plain CSS class (no !important),
-    // so it doesn't fight any of the inline styles GSAP sets above.
-    container.classList.add("is-row-collapsed");
-    gsap.set(container, { flexDirection: "row", flexWrap: "wrap" });
-    gsap.set(cards[0], {
-      width: "50%",
-      height: rowDayNightH,
-      marginTop: 0,
-      flexGrow: 0,
-      flexShrink: 0,
-      flexBasis: "auto",
-    });
-    gsap.set(cards[1], {
-      width: "50%",
-      height: rowDayNightH,
-      marginTop: 0,
-      flexGrow: 0,
-      flexShrink: 0,
-      flexBasis: "auto",
-    });
-    gsap.set(cards[2], {
-      width: "100%",
-      height: rowVideoH,
-      // CSS gives Card 3 a min-height: 140px floor (defense against an
-      // earlier bug where it could collapse to 0 in the column layout)
-      // — override it here or it'd force this 100px bar up to 140px.
-      minHeight: rowVideoH,
-      marginTop: 0,
-      flexGrow: 0,
-      flexShrink: 0,
-      flexBasis: "auto",
-    });
-  }
-
-  // Restores the vertical overlapping-deck layout used by every
-  // expanded (0/1/2) state — see the .stack-card CSS comments for how
-  // Card 3's flex-grow fill works.
-  function applyColumnLayout() {
-    container.classList.remove("is-row-collapsed");
-    gsap.set(container, { flexDirection: "column", flexWrap: "nowrap" });
-    gsap.set(cards[0], { width: "100%", marginTop: 0, flexGrow: 0, flexShrink: 0, flexBasis: "auto" });
-    gsap.set(cards[1], { width: "100%", marginTop: -overlap, flexGrow: 0, flexShrink: 0, flexBasis: "auto" });
-    gsap.set(cards[2], {
-      width: "100%",
-      marginTop: -overlap,
-      height: "auto",
-      minHeight: collapsedH,
-      flexGrow: 1,
-      flexShrink: 1,
-      flexBasis: 0,
-    });
-  }
-
   function applyHeights(instant) {
-    // Whether we're pinned or not doesn't change what the container's
-    // height/position should be — only whether any card is expanded
-    // does (activeIndex !== -1), including the moment right after
-    // unpinning, where activeIndex is deliberately left at 2 so Card 3
-    // stays fully expanded (there's no onLeave handler resetting it —
-    // see the ScrollTrigger config below).
+    // Always an explicit pixel height, pinned or not: Card 3 has no
+    // height of its own (flex: 1 1 0, see style.css) and fills whatever
+    // the container doesn't otherwise use, but a flex-grow item with a
+    // zero basis only grows into a *definite*-size container. Sizing
+    // this to "auto" while unpinned (as a previous version did) left
+    // nothing for Card 3 to grow into, so it silently collapsed to 0
+    // height and vanished. Whether we're actually pinned right now
+    // doesn't change what the container's height/position should be —
+    // only whether any card is expanded does (activeIndex !== -1).
     const expanding = activeIndex !== -1;
     const targetContainerH = expanding ? fullH : collapsedTotalH;
     const targetY = expanding ? expandedShiftY : 0;
@@ -248,63 +181,29 @@ function initGSAPCardStack() {
     }
 
     if (instant) {
-      // Instant: safe to swap the row/column layout and set the final
-      // size together — no intermediate frame is ever rendered, so
-      // there's no window where they could be out of sync.
-      if (expanding) {
-        applyColumnLayout();
-      } else {
-        applyRowLayout();
-      }
       gsap.set(container, { height: targetContainerH, y: targetY });
-      // Card 3 (index 2) is never tweened directly in the expanded
-      // (column) layout — it's the sole flex-grow item there, so it
-      // always fills whatever space cards 1/2 leave behind and its
-      // bottom edge never moves. In the row layout all three cards
-      // already got their fixed size from applyRowLayout() above.
-      if (expanding) {
-        [cards[0], cards[1]].forEach((card, i) => {
-          gsap.set(card, { height: i === activeIndex ? expandedH : collapsedH });
-        });
-      }
+      // Card 3 (index 2) is never tweened directly — it's the sole
+      // flex-grow item (see .stack-card:nth-child(3) in style.css), so
+      // it always fills whatever space cards 1/2 leave behind and its
+      // bottom edge never moves. Only cards 0 and 1 have an explicit
+      // height.
+      [cards[0], cards[1]].forEach((card, i) => {
+        gsap.set(card, { height: i === activeIndex ? expandedH : collapsedH });
+      });
       return;
-    }
-
-    // Animated: row<->column can't itself be tweened, so one side of
-    // this transition has to snap discretely — but WHEN it snaps
-    // matters. Row->column (expanding) snaps immediately, so the
-    // height tween below plays out within the correct (vertical) form
-    // from the first frame. Column->row (collapsing) is the opposite:
-    // snapping the cards to their tiny final row size immediately,
-    // while the container is still mid-tween shrinking from a much
-    // taller height, left them sitting inside a box far bigger than
-    // their own content for the whole 0.4s — a big gap around them.
-    // Deferring the snap to onComplete instead keeps the cards in
-    // their current (larger) form, simply clipped by the container's
-    // overflow: hidden as it shrinks, matching how every other
-    // collapse in this component already looks — then swaps to the
-    // correct row layout in the same instant the container finishes
-    // shrinking to meet it.
-    if (expanding) {
-      applyColumnLayout();
     }
 
     heightTimeline = gsap.timeline({
       onComplete: () => {
-        if (!expanding) {
-          applyRowLayout();
-        }
         isAnimating = false;
         heightTimeline = null;
       },
     });
     heightTimeline.to(container, { height: targetContainerH, y: targetY, duration: 0.4, ease: "power3.out" }, 0);
-    if (expanding) {
-      [cards[0], cards[1]].forEach((card, i) => {
-        const targetH = i === activeIndex ? expandedH : collapsedH;
-        heightTimeline.to(card, { height: targetH, duration: 0.4, ease: "power3.out" }, 0);
-      });
-    }
+    [cards[0], cards[1]].forEach((card, i) => {
+      const targetH = i === activeIndex ? expandedH : collapsedH;
+      heightTimeline.to(card, { height: targetH, duration: 0.4, ease: "power3.out" }, 0);
+    });
   }
 
   measure();
@@ -345,6 +244,16 @@ function initGSAPCardStack() {
     return stepDistance + Math.abs(expandedShiftY);
   }
 
+  // True while onUpdate is driving the final-stretch collapse directly
+  // off scroll position (see below) rather than through goToStep()'s
+  // fixed-duration tween. A time-based tween there would fully finish
+  // in 0.4s and then just sit still for however much of the remaining
+  // scroll distance the user takes to get through it — on a slow
+  // scroll that can read as the page freezing rather than progressing.
+  // Scrubbing it 1:1 with scroll keeps it visibly responsive the whole
+  // way, the same way normal (non-pinned) scrolling always is.
+  let inFinalCollapseZone = false;
+
   ScrollTrigger.create({
     trigger: ".stack-section",
     start: "top bottom-=" + collapsedTotalH,
@@ -357,20 +266,41 @@ function initGSAPCardStack() {
     onUpdate: (self) => {
       const px = self.progress * getTotalDistance();
       if (px <= 0) {
+        inFinalCollapseZone = false;
         goToStep(-1); // At/above the pin start, keep all collapsed.
       } else if (px < stepDistance * 0.33) {
+        inFinalCollapseZone = false;
         goToStep(0);
       } else if (px < stepDistance * 0.66) {
+        inFinalCollapseZone = false;
         goToStep(1);
       } else if (px < stepDistance) {
+        inFinalCollapseZone = false;
         goToStep(2);
       } else {
-        // Final stretch: collapse back to the row layout while still
-        // pinned, so the section is already sitting where
-        // collapsedTotalH naturally rests by the time it unpins — see
-        // getTotalDistance()'s comment for why that distance exists.
-        goToStep(-1);
+        // Final stretch: cards 0/1 are already collapsed (activeIndex
+        // was 2, which targets collapsedH for both of them already) —
+        // only the container's height/y need to move, and Card 3
+        // (flex-grow) shrinks automatically as the container does.
+        if (heightTimeline) {
+          heightTimeline.kill();
+          heightTimeline = null;
+        }
+        activeIndex = -1;
+        isAnimating = false;
+        inFinalCollapseZone = true;
+        const collapseDist = Math.max(1, getTotalDistance() - stepDistance);
+        const t = Math.min(1, (px - stepDistance) / collapseDist);
+        gsap.set(container, {
+          height: fullH + (collapsedTotalH - fullH) * t,
+          y: expandedShiftY * (1 - t),
+        });
       }
+    },
+    onLeave: () => {
+      // Safety net only — activeIndex should already be -1 by now from
+      // the final onUpdate zone above, so this is normally a no-op.
+      goToStep(-1);
     },
     onLeaveBack: () => {
       // Scrolled back above the pin: reset to approach state.
@@ -432,7 +362,7 @@ function initGSAPCardStack() {
     start: "top bottom",
     end: "bottom top",
     onUpdate: () => {
-      if (heightTimeline) return;
+      if (heightTimeline || inFinalCollapseZone) return;
       const expected = activeIndex === -1 ? collapsedTotalH : fullH;
       if (Math.abs(container.getBoundingClientRect().height - expected) > 2) {
         applyHeights(true);

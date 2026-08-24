@@ -177,6 +177,56 @@ a {
   width: auto;
 }
 
+/* Pinned to the left edge of the nav (nav__inner is justify-content:
+   flex-end for the links on the right) via margin-right: auto, which
+   pushes everything else back over to the right as normal. Colour is
+   plain black/white — the same two-state swap driven by
+   .nav--on-dark as the logo and links below, rather than the pink
+   used in the hero countdown, so it stays legible over every section
+   the nav can be pinned above (bright yellow/pink cards included,
+   where pink-on-pink would vanish). */
+.nav__countdown {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(10px, 1.6vw, 20px);
+  margin-right: auto;
+  color: var(--black);
+  transition: color 0.3s ease;
+}
+
+.nav--on-dark .nav__countdown {
+  color: var(--white);
+}
+
+.nav__countdown-item {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.nav__countdown-item strong {
+  font-family: var(--font-accent);
+  font-weight: 900;
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  color: inherit;
+}
+
+.nav__countdown-item span {
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+  color: inherit;
+}
+
+@media (max-width: 720px) {
+  .nav__countdown-item span {
+    display: none;
+  }
+}
+
 .nav__links {
   display: flex;
   align-items: center;
@@ -671,7 +721,7 @@ a {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 24px;
-  padding: clamp(32px, 5vw, 64px) clamp(32px, 9vw, 140px);
+  padding: clamp(32px, 5vw, 64px) clamp(48px, 14vw, 220px);
   width: 100%;
 }
 

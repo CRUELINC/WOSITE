@@ -100,26 +100,31 @@ function initTicketsCardVideo() {
 /* ---------------- COUNTDOWN ---------------- */
 
 function initCountdown() {
-  const el = document.querySelector("[data-countdown]");
-  if (!el) return;
+  const els = document.querySelectorAll("[data-countdown]");
+  if (!els.length) return;
 
-  const target = new Date(el.dataset.countdown).getTime();
-  const dEl = el.querySelector("[data-days]");
-  const hEl = el.querySelector("[data-hours]");
-  const mEl = el.querySelector("[data-minutes]");
-  const sEl = el.querySelector("[data-seconds]");
+  const timers = Array.from(els).map((el) => ({
+    target: new Date(el.dataset.countdown).getTime(),
+    dEl: el.querySelector("[data-days]"),
+    hEl: el.querySelector("[data-hours]"),
+    mEl: el.querySelector("[data-minutes]"),
+    sEl: el.querySelector("[data-seconds]"),
+  }));
 
   function tick() {
-    const diff = Math.max(0, target - Date.now());
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const minutes = Math.floor((diff % 3600000) / 60000);
-    const seconds = Math.floor((diff % 60000) / 1000);
+    const now = Date.now();
+    timers.forEach(({ target, dEl, hEl, mEl, sEl }) => {
+      const diff = Math.max(0, target - now);
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
 
-    if (dEl) dEl.textContent = String(days).padStart(2, "0");
-    if (hEl) hEl.textContent = String(hours).padStart(2, "0");
-    if (mEl) mEl.textContent = String(minutes).padStart(2, "0");
-    if (sEl) sEl.textContent = String(seconds).padStart(2, "0");
+      if (dEl) dEl.textContent = String(days).padStart(2, "0");
+      if (hEl) hEl.textContent = String(hours).padStart(2, "0");
+      if (mEl) mEl.textContent = String(minutes).padStart(2, "0");
+      if (sEl) sEl.textContent = String(seconds).padStart(2, "0");
+    });
   }
 
   tick();

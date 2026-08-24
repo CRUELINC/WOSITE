@@ -207,14 +207,14 @@ a {
 .nav__countdown-item strong {
   font-family: var(--font-accent);
   font-weight: 900;
-  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  font-size: clamp(1.7rem, 2.8vw, 2.3rem);
   color: inherit;
 }
 
 .nav__countdown-item span {
   font-family: var(--font-accent);
   font-weight: 700;
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   opacity: 0.6;
@@ -400,38 +400,6 @@ a {
   margin: 0 0 18px;
 }
 
-.hero__countdown {
-  display: flex;
-  gap: clamp(16px, 3.5vw, 36px);
-  justify-content: center;
-  margin: 0 0 32px;
-}
-
-.hero__countdown-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.hero__countdown-item strong {
-  font-family: var(--font-accent);
-  font-weight: 900;
-  color: var(--pink-deep);
-  font-size: clamp(2rem, 4.5vw, 3.4rem);
-  line-height: 1;
-  -webkit-text-stroke: 0.5px currentColor;
-}
-
-.hero__countdown-item span {
-  font-family: var(--font-accent);
-  font-weight: 700;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.55;
-}
-
 .hero__meta {
   display: flex;
   flex-wrap: wrap;
@@ -604,32 +572,53 @@ a {
 }
 
 /* Card 2 (Pink) slides up underneath Card 1 (Yellow); Card 3 (Tickets)
-   slides up underneath Card 2. Descending z-index so each card sits
-   above the one below it, which now overlaps up and under it. */
+   slides up underneath Card 2. Descending z-index (with gaps, see the
+   hover rules below) so each card sits above the one below it, which
+   now overlaps up and under it. */
 .stack-card:nth-child(1) {
   margin-top: 0;
-  z-index: 3;
+  z-index: 30;
 }
 
 .stack-card:nth-child(2) {
   margin-top: -24px;
-  z-index: 2;
+  z-index: 20;
 }
 
 .stack-card:nth-child(3) {
   margin-top: -24px;
-  z-index: 1;
+  z-index: 10;
 }
 
 /* Hover/focus expands the card to reveal its full-opacity artwork
-   (see .bar__art below) and lifts it above its overlapping neighbours
-   — otherwise a card resting at a lower z-index (Night, Tickets) would
-   grow taller but stay visually tucked behind the card above it. */
+   (see .bar__art below). Growing a card only pushes the ones below it
+   further down the flex column — the card(s) above stay exactly where
+   they are — so the only z-index problem is the expanding card
+   covering up cards further down, which still need to tuck under it
+   the same way they do at rest. Bumping z-index by a flat, fixed
+   amount (rather than to one number above everything) keeps it below
+   whatever's resting above it, so that card's rounded bottom corner
+   still overhangs the expanded card's top edge exactly like it does
+   collapsed, instead of the expand flattening that seam away. */
+.stack-card:nth-child(1):hover,
+.stack-card:nth-child(1):focus-within {
+  z-index: 35;
+}
+
+.stack-card:nth-child(2):hover,
+.stack-card:nth-child(2):focus-within {
+  z-index: 25;
+}
+
+.stack-card:nth-child(3):hover,
+.stack-card:nth-child(3):focus-within {
+  z-index: 15;
+}
+
 .stack-card:hover,
 .stack-card:focus-within {
   height: clamp(520px, 65vw, 760px);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
-  z-index: 40;
 }
 
 .hero-section {
@@ -766,6 +755,11 @@ a {
   line-height: 1.4;
   opacity: 0.85;
   margin: 0;
+  /* Neue Bit only ships one (700) weight, so there's no heavier file
+     to switch to — thickened instead with a stroke, same technique
+     the card titles use for their bold look. */
+  -webkit-text-stroke: 0.6px currentColor;
+  text-shadow: 0.25px 0 currentColor, -0.25px 0 currentColor;
 }
 
 .bar__meta--right {

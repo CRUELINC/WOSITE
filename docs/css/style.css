@@ -728,6 +728,16 @@ a {
   background-position: center top;
   background-size: cover;
   color: var(--white);
+  /* Flip the backdrop vertically so its densest splash concentration
+     sits at the BOTTOM of this section (matching the inverted
+     treatment used by .intro-backdrop above), instead of fading out
+     to white right where the footer wordmark sits. The content itself
+     is counter-flipped back upright. */
+  transform: scaleY(-1);
+}
+
+.site-footer__content {
+  transform: scaleY(-1);
 }
 
 .site-footer__map {

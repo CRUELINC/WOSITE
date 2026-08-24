@@ -472,18 +472,24 @@ a {
   padding: 40px 0 0;
 }
 
-.stack-section,
-.stack-container {
-  /* Only the individual cards paint a background; if either of these
-     picked one up, it would show through as a solid block filling
-     whatever part of the pinned frame isn't covered by a card. */
-  background: transparent !important;
-}
-
 .stack-section {
   position: relative;
   width: 100%;
   overflow: visible;
+  /* While the collapsed stack is docked low in the pinned frame (its
+     approach state), there's empty space above it before it expands
+     to fill the screen. That space used to be invisible when the
+     base site color matched the Day card's yellow — now that the
+     base is a neutral off-white, the same gap reads as a stark flat
+     block instead of blending in. Filling it with the same splash
+     texture used above (rather than reverting the base color) keeps
+     it looking like the artwork continues through, not a void.
+     Cards paint their own opaque backgrounds, so this only shows in
+     the gaps around them. */
+  background-image: url("../assets/img/backdrop-landing-baked.webp");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
 }
 
 .stack-container {

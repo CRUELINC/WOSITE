@@ -98,14 +98,14 @@ a {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 14px 30px;
+  padding: clamp(18px, 2.4vw, 26px) clamp(40px, 5vw, 60px);
   border-radius: 999px;
   border: 2px solid var(--black);
   background: var(--black);
   color: var(--white);
   font-family: var(--font-accent);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   cursor: pointer;

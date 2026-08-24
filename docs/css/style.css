@@ -632,7 +632,7 @@ a {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 24px;
-  padding: clamp(28px, 4vw, 56px) 2rem;
+  padding: clamp(28px, 4vw, 56px) clamp(24px, 7vw, 110px);
   width: 100%;
 }
 

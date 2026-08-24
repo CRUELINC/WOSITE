@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initNav();
   initNavContrast();
   initFaq();
+  initTicketsCardVideo();
 });
 
 /* ---------------- NAV ---------------- */
@@ -72,6 +73,27 @@ function initNavContrast() {
 
   build();
   window.addEventListener("resize", build);
+}
+
+/* ---------------- TICKETS CARD VIDEO ----------------
+   The card's background video only plays while hovered/focused (its
+   own hover-expand interaction) rather than autoplaying constantly —
+   it's a small strip most of the time and off-screen for large
+   stretches of a scroll, so there's no reason to keep decoding frames
+   the whole visit. */
+
+function initTicketsCardVideo() {
+  const card = document.querySelector(".card--tickets");
+  const video = card && card.querySelector("video");
+  if (!video) return;
+
+  const play = () => video.play().catch(() => {});
+  const pause = () => video.pause();
+
+  card.addEventListener("mouseenter", play);
+  card.addEventListener("mouseleave", pause);
+  card.addEventListener("focus", play);
+  card.addEventListener("blur", pause);
 }
 
 /* ---------------- FAQ ACCORDION ---------------- */

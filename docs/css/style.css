@@ -502,7 +502,7 @@ a {
 .stack-card {
   position: relative;
   width: 100%;
-  height: clamp(150px, 20vw, 190px);
+  height: clamp(173px, 23vw, 219px);
   overflow: hidden;
   flex-shrink: 0;
   box-sizing: border-box;
@@ -709,6 +709,13 @@ a {
   cursor: pointer;
   background: linear-gradient(160deg, #3c0a3c, #7b1189);
   color: var(--white);
+}
+
+/* Unlike Day/Night's illustrations, the Tickets card's video is the
+   whole point of the reveal — let it fill the full expanded card
+   instead of the half-height banner the other two cards use. */
+.bar--tickets .bar__art {
+  height: 100%;
 }
 
 .bar--tickets .bar__art-img--full {

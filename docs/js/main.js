@@ -1,13 +1,37 @@
 // ============================================================
-// WEST OF SPADINA — shared behaviour (static, no scroll animation)
+// WEST OF SPADINA — shared behaviour
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
+  initSmoothScroll();
   initNav();
   initFaq();
   initTicketsCardVideo();
   initCountdown();
 });
+
+/* ---------------- SMOOTH SCROLL ----------------
+   A light momentum/glide on top of native scroll (Lenis), not a
+   heavy luxury-scroll overhaul — short duration and an unchanged
+   wheel multiplier so it still feels responsive, just eases instead
+   of snapping to each tick. Lenis re-dispatches a native "scroll"
+   event on every frame, so nothing else on the page (IntersectionObserver
+   usage, the fixed nav, etc.) needs to know it's there. */
+
+function initSmoothScroll() {
+  if (typeof Lenis === "undefined") return;
+
+  const lenis = new Lenis({
+    duration: 1.0,
+    easing: (t) => 1 - Math.pow(1 - t, 3),
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+}
 
 /* ---------------- NAV ---------------- */
 

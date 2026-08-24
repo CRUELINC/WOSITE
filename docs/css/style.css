@@ -581,11 +581,12 @@ a {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
-  /* Content row is pinned to the bottom in both states — only the
-     artwork area above it grows, matching the Figma collapsed/expanded
-     pair (the text sits in the same relative spot in both). */
-  justify-content: flex-end;
-  transition: height 0.5s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
+  /* Vertically centered at rest. On hover/expand this switches to
+     flex-end (see below) so the text stays pinned under the revealed
+     artwork banner instead of drifting into the middle of a now much
+     taller card. */
+  justify-content: center;
+  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s var(--ease-smooth);
 }
 
 /* Card 2 (Pink) slides up underneath Card 1 (Yellow); Card 3 (Tickets)
@@ -636,6 +637,7 @@ a {
 .stack-card:focus-within {
   height: clamp(520px, 65vw, 760px);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+  justify-content: flex-end;
 }
 
 .hero-section {
@@ -757,12 +759,43 @@ a {
 .bar__inner {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 24px;
+  justify-content: center;
+  gap: 10px;
   padding: clamp(32px, 5vw, 64px) clamp(48px, 14vw, 220px);
   width: 100%;
+  text-align: center;
+}
+
+.bar__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 20px;
+  margin: 0 0 4px;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  font-family: var(--font-accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: clamp(0.85rem, 1.3vw, 1.05rem);
+  opacity: 0.9;
+}
+
+.bar__location {
+  font-family: var(--font-accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: clamp(1.15rem, 1.7vw, 1.45rem);
+  line-height: 1.4;
+  opacity: 0.85;
+  margin: 4px 0 0;
+  -webkit-text-stroke: 0.6px currentColor;
+  text-shadow: 0.25px 0 currentColor, -0.25px 0 currentColor;
 }
 
 /* At rest the artwork sits at 12% opacity, so the card's own solid
@@ -797,26 +830,6 @@ a {
   background: linear-gradient(to top, rgba(40, 6, 40, 0.9), rgba(40, 6, 40, 0) 100%);
 }
 
-.bar__meta {
-  font-family: var(--font-accent);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  font-size: clamp(1.15rem, 1.7vw, 1.45rem);
-  line-height: 1.4;
-  opacity: 0.85;
-  margin: 0;
-  /* Neue Bit only ships one (700) weight, so there's no heavier file
-     to switch to — thickened instead with a stroke, same technique
-     the card titles use for their bold look. */
-  -webkit-text-stroke: 0.6px currentColor;
-  text-shadow: 0.25px 0 currentColor, -0.25px 0 currentColor;
-}
-
-.bar__meta--right {
-  text-align: right;
-}
-
 .bar__title {
   font-family: var(--font-accent);
   font-weight: 900;
@@ -836,11 +849,6 @@ a {
   cursor: pointer;
   background: linear-gradient(160deg, #3c0a3c, #7b1189);
   color: var(--white);
-  /* Longer, gentler ease-in-out than the shared .stack-card transition
-     -- the collapse (hover/focus ending) in particular read as too
-     abrupt at the shorter duration/ease-out curve Day/Night still
-     use. */
-  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s var(--ease-smooth);
 }
 
 /* Unlike Day/Night's illustrations, the Tickets card's video is the
@@ -884,7 +892,8 @@ a {
   text-shadow: 0 0 24px rgba(255, 87, 251, 0.6), 0.3px 0 currentColor, -0.3px 0 currentColor;
 }
 
-.bar--tickets .bar__meta {
+.bar--tickets .bar__pill,
+.bar--tickets .bar__location {
   position: relative;
   z-index: 1;
 }
@@ -1262,10 +1271,15 @@ a {
      (tuned for a wide single-line desktop layout) reads as too heavy
      once this text is wrapping across 2-4 lines in a much narrower
      column. */
-  .bar__meta {
+  .bar__location {
     font-size: 0.8rem;
     -webkit-text-stroke: 0;
     text-shadow: none;
+  }
+
+  .bar__pill {
+    font-size: 0.7rem;
+    padding: 5px 14px;
   }
 
   .nav__links {

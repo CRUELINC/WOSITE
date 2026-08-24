@@ -545,7 +545,7 @@ a {
    grow taller but stay visually tucked behind the card above it. */
 .stack-card:hover,
 .stack-card:focus-within {
-  height: clamp(420px, 48vw, 560px);
+  height: clamp(520px, 65vw, 760px);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
   z-index: 40;
 }

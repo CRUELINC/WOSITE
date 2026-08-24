@@ -784,22 +784,6 @@ a {
   text-shadow: 0 0 24px rgba(255, 87, 251, 0.6), 0.3px 0 currentColor, -0.3px 0 currentColor;
 }
 
-/* The plain "Get Tickets" title morphs into the Figma expanded
-   variant's pill button on hover, rather than swapping DOM nodes. */
-.bar__title--tickets span {
-  display: inline-block;
-  border-radius: 999px;
-  background: transparent;
-  transition: background 0.4s var(--ease-smooth), padding 0.4s var(--ease-smooth), box-shadow 0.4s var(--ease-smooth);
-}
-
-.stack-card:hover .bar__title--tickets span,
-.stack-card:focus-within .bar__title--tickets span {
-  background: var(--pink);
-  padding: 0.35em 0.9em;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
 .bar--tickets .bar__meta {
   position: relative;
   z-index: 1;

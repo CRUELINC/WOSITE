@@ -639,7 +639,7 @@ a {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 24px;
-  padding: clamp(28px, 4vw, 56px) clamp(24px, 7vw, 110px);
+  padding: clamp(32px, 5vw, 64px) clamp(32px, 9vw, 140px);
   width: 100%;
 }
 
@@ -680,7 +680,7 @@ a {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+  font-size: clamp(1.15rem, 1.7vw, 1.45rem);
   line-height: 1.4;
   opacity: 0.85;
   margin: 0;

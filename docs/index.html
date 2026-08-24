@@ -49,7 +49,7 @@
   </div>
 </section>
 
-<!-- ============ EVENT STACK — pinned 3-card accordion ============ -->
+<!-- ============ EVENT STACK — static 3-card deck ============ -->
 <section class="event-stack" id="bars">
   <div class="stack-section">
     <div class="stack-container">
@@ -72,27 +72,23 @@
         </div>
       </div>
 
-      <!-- Card 3: Countdown (Video) -->
-      <div class="event-stack__countdown stack-card card--countdown" id="video" data-countdown="2026-09-19T16:00:00">
-        <video
-          muted
-          loop
-          playsinline
-          preload="metadata"
-          poster="assets/img/content-headliner.jpg"
-          src="assets/video/blockparty-loop.mp4"
-        ></video>
-        <div class="event-stack__countdown-content">
-          <div class="countdown">
-            <div class="countdown__item"><strong data-days>00</strong><span>Days</span></div>
-            <div class="countdown__item"><strong data-hours>00</strong><span>Hours</span></div>
-            <div class="countdown__item"><strong data-minutes>00</strong><span>Minutes</span></div>
-            <div class="countdown__item"><strong data-seconds>00</strong><span>Seconds</span></div>
-          </div>
+      <!-- Card 3: Get Tickets -->
+      <a href="javascript:void(0)" class="bar bar--tickets stack-card card--tickets">
+        <div class="bar__inner">
+          <p class="bar__meta">West of<br />Spadina</p>
+          <h2 class="bar__title bar__title--tickets">Get Tickets</h2>
+          <p class="bar__meta bar__meta--right">Saturday<br />September 19th, 2026</p>
         </div>
-      </div>
+      </a>
 
     </div>
+  </div>
+</section>
+
+<!-- ============ SITE MAP ============ -->
+<section class="site-map">
+  <div class="site-map__inner">
+    <img src="assets/img/figma-sitemap.webp" alt="West of Spadina site map" loading="lazy" decoding="async" />
   </div>
 </section>
 
@@ -102,8 +98,6 @@
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

@@ -40,7 +40,7 @@
   --font-accent: "Neue Bit", var(--font-body);
 
   --container: 1240px;
-  --nav-h: 84px;
+  --nav-h: 112px;
 
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -165,31 +165,32 @@ a {
   justify-content: flex-end;
 }
 
-.nav__logo {
+/* Logo + countdown stacked as one unit, centered in the nav. */
+.nav__center {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
 
 .nav__logo img {
-  height: 48px;
+  height: 42px;
   width: auto;
 }
 
-/* Pinned to the left edge of the nav (nav__inner is justify-content:
-   flex-end for the links on the right) via margin-right: auto, which
-   pushes everything else back over to the right as normal. Colour is
-   plain black/white — the same two-state swap driven by
+/* Colour is plain black/white — the same two-state swap driven by
    .nav--on-dark as the logo and links below, rather than the pink
-   used in the hero countdown, so it stays legible over every section
-   the nav can be pinned above (bright yellow/pink cards included,
-   where pink-on-pink would vanish). */
+   used in the (now-removed) hero countdown, so it stays legible over
+   every section the nav can be pinned above (bright yellow/pink cards
+   included, where pink-on-pink would vanish). */
 .nav__countdown {
   display: flex;
   align-items: baseline;
   gap: clamp(10px, 1.6vw, 20px);
-  margin-right: auto;
   color: var(--black);
   transition: color 0.3s ease;
 }
@@ -207,14 +208,14 @@ a {
 .nav__countdown-item strong {
   font-family: var(--font-accent);
   font-weight: 900;
-  font-size: clamp(1.7rem, 2.8vw, 2.3rem);
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
   color: inherit;
 }
 
 .nav__countdown-item span {
   font-family: var(--font-accent);
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   opacity: 0.6;
@@ -686,6 +687,15 @@ a {
 .stack-card:hover .bar__art-img,
 .stack-card:focus-within .bar__art-img {
   opacity: 1;
+}
+
+/* Day/Night's pop-art illustrations shrink to fit fully inside their
+   half-height banner instead of cropping to fill it (object-fit:
+   cover, the default above) -- unlike the Tickets card's video, which
+   stays cover so it fills the frame edge-to-edge. */
+.bar--free .bar__art-img,
+.bar--paid .bar__art-img {
+  object-fit: contain;
 }
 
 .bar__art-img--left {

@@ -40,7 +40,7 @@
   --font-accent: "Neue Bit", var(--font-body);
 
   --container: 1240px;
-  --nav-h: 112px;
+  --nav-h: 130px;
 
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -100,7 +100,7 @@ a {
   gap: 8px;
   padding: clamp(18px, 2.4vw, 26px) clamp(40px, 5vw, 60px);
   border-radius: 999px;
-  border: 2px solid var(--black);
+  border: none;
   background: var(--black);
   color: var(--white);
   font-family: var(--font-accent);
@@ -109,6 +109,10 @@ a {
   letter-spacing: 0.03em;
   text-transform: uppercase;
   cursor: pointer;
+  /* Neue Bit only ships one weight -- thickened with a stroke instead
+     of a heavier font file, same technique used elsewhere on site. */
+  -webkit-text-stroke: 0.8px currentColor;
+  text-shadow: 0.3px 0 currentColor, -0.3px 0 currentColor;
 }
 
 .btn--yellow {
@@ -178,7 +182,7 @@ a {
 }
 
 .nav__logo img {
-  height: 42px;
+  height: clamp(42px, 4.2vw, 60px);
   width: auto;
 }
 
@@ -208,14 +212,14 @@ a {
 .nav__countdown-item strong {
   font-family: var(--font-accent);
   font-weight: 900;
-  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  font-size: clamp(1.1rem, 2vw, 1.9rem);
   color: inherit;
 }
 
 .nav__countdown-item span {
   font-family: var(--font-accent);
   font-weight: 700;
-  font-size: 0.6rem;
+  font-size: clamp(0.6rem, 0.8vw, 0.8rem);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   opacity: 0.6;
@@ -370,7 +374,6 @@ a {
 
 .hero__layer--mid img {
   width: min(92vw, 980px, 92vh);
-  filter: drop-shadow(0 30px 60px rgba(224, 24, 159, 0.25));
 }
 
 .hero__layer--top {
@@ -698,14 +701,20 @@ a {
   object-fit: contain;
 }
 
-.bar__art-img--left {
-  left: 0;
-  width: 68%;
+/* Day's two illustrations sit flush against each other with no gap,
+   pushed to the right edge of the banner, instead of each occupying a
+   fixed-width box (which left visible empty space around them once
+   they switched to object-fit: contain above). */
+.bar--free .bar__art {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
 }
 
-.bar__art-img--right {
-  right: 0;
-  width: 40%;
+.bar--free .bar__art-img {
+  position: static;
+  width: auto;
+  max-width: none;
 }
 
 .bar__art-img--full {

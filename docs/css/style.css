@@ -836,6 +836,11 @@ a {
   cursor: pointer;
   background: linear-gradient(160deg, #3c0a3c, #7b1189);
   color: var(--white);
+  /* Longer, gentler ease-in-out than the shared .stack-card transition
+     -- the collapse (hover/focus ending) in particular read as too
+     abrupt at the shorter duration/ease-out curve Day/Night still
+     use. */
+  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s var(--ease-smooth);
 }
 
 /* Unlike Day/Night's illustrations, the Tickets card's video is the

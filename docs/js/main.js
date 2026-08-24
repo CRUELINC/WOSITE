@@ -110,7 +110,7 @@ function initGSAPCardStack() {
   const cards = document.querySelectorAll(".stack-card");
   if (!container || cards.length !== 3) return;
 
-  const collapsedH = 140;
+  const collapsedH = 170;
   // Cards 2 and 3 have a -24px margin-top (see .stack-card:nth-child(2/3)
   // in style.css) so they physically overlap the card above them, like a
   // layered deck. That shrinks the real on-screen height of both the

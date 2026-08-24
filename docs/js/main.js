@@ -48,8 +48,8 @@ function initNavContrast() {
     nav.classList.toggle("nav--on-dark", isDark);
     if (logo) {
       logo.src = isDark
-        ? "assets/img/wos-wordmark-white.png"
-        : "assets/img/wos-wordmark-black.png";
+        ? "assets/img/wos-wordmark-white.webp"
+        : "assets/img/wos-wordmark-black.webp";
     }
   };
 

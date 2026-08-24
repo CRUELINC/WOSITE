@@ -590,7 +590,14 @@ a {
 
 .bar__art {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Fixed at roughly half the expanded card height (see
+     .stack-card:hover below) rather than stretching to fill the whole
+     card — the artwork should read as a banner across the top, not
+     take over the entire expanded card. */
+  height: clamp(260px, 32.5vw, 380px);
   z-index: 0;
   overflow: hidden;
   pointer-events: none;

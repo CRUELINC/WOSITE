@@ -676,11 +676,11 @@ a {
 }
 
 .bar__meta {
-  font-family: "Helvetica LT Std", var(--font-body);
-  font-weight: 400;
+  font-family: var(--font-accent);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  font-size: clamp(1.05rem, 1.5vw, 1.3rem);
   line-height: 1.4;
   opacity: 0.85;
   margin: 0;

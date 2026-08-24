@@ -723,21 +723,33 @@ a {
   z-index: -1;
   width: 100%;
   overflow: hidden;
+  color: var(--white);
+}
+
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background-image: url("../assets/img/backdrop-landing-baked.webp");
   background-repeat: no-repeat;
   background-position: center top;
   background-size: cover;
-  color: var(--white);
   /* Flip the backdrop vertically so its densest splash concentration
      sits at the BOTTOM of this section (matching the inverted
      treatment used by .intro-backdrop above), instead of fading out
-     to white right where the footer wordmark sits. The content itself
-     is counter-flipped back upright. */
-  transform: scaleY(-1);
+     to white right where the footer wordmark sits. Scaled up beyond
+     100% so the splash bleeds past the left/right edges instead of
+     visibly running out before reaching them at wide viewport widths.
+     Isolated to this pseudo-element (rather than transforming
+     .site-footer itself) so only the backdrop is flipped/scaled, not
+     the map image and logo sitting on top of it. */
+  transform: scaleY(-1) scale(1.2);
 }
 
 .site-footer__content {
-  transform: scaleY(-1);
+  position: relative;
+  z-index: 1;
 }
 
 .site-footer__map {

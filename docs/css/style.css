@@ -635,7 +635,7 @@ a {
 
 .stack-card:hover,
 .stack-card:focus-within {
-  height: clamp(520px, 65vw, 760px);
+  height: clamp(600px, 75vw, 860px);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
   justify-content: flex-end;
 }

@@ -569,7 +569,7 @@ a {
 .stack-card {
   position: relative;
   width: 100%;
-  height: clamp(200px, 26vw, 250px);
+  height: clamp(230px, 30vw, 290px);
   overflow: hidden;
   flex-shrink: 0;
   box-sizing: border-box;

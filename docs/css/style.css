@@ -701,20 +701,39 @@ a {
   object-fit: contain;
 }
 
-/* Day's two illustrations sit flush against each other with no gap,
-   pushed to the right edge of the banner, instead of each occupying a
-   fixed-width box (which left visible empty space around them once
-   they switched to object-fit: contain above). */
-.bar--free .bar__art {
+/* Day/Night's artwork scrolls right-to-left as a slow, seamless,
+   infinitely-repeating strip instead of sitting static. The markup
+   repeats the image (or image pair, for Day) four times in a row
+   inside .bar__art-track; animating the track exactly -25% (one
+   quarter of its own width, i.e. one repeat) loops back to a frame
+   that's pixel-identical to the start, so the reset is invisible.
+   Four repeats (rather than the two a seamless loop strictly needs)
+   is just a safety margin so there's still enough width to cover very
+   wide viewports without a gap showing before the loop */
+.bar--free .bar__art-track,
+.bar--paid .bar__art-track {
   display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
+  height: 100%;
+  width: max-content;
+  animation: bar-art-scroll 32s linear infinite;
 }
 
-.bar--free .bar__art-img {
+.bar--free .bar__art-img,
+.bar--paid .bar__art-img {
   position: static;
+  height: 100%;
   width: auto;
   max-width: none;
+  flex-shrink: 0;
+}
+
+@keyframes bar-art-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-25%);
+  }
 }
 
 .bar__art-img--full {
@@ -1209,9 +1228,28 @@ a {
     background-position: center top;
     background-size: cover;
   }
+  /* .intro-backdrop's -175px pull-up is tuned for its desktop height
+     (set by aspect-ratio against a ~1240px-wide container). On a
+     narrow viewport that same box is much shorter, so the fixed
+     -175px drags the intro copy (and the CTA sitting right above it
+     in .hero__content) into an overlapping mess. Scaling it back
+     keeps the CTA clear. */
+  .intro-backdrop {
+    margin-top: -60px;
+  }
 }
 
 @media (max-width: 720px) {
+  /* Lighter and smaller on narrow cards -- the bold stroke treatment
+     (tuned for a wide single-line desktop layout) reads as too heavy
+     once this text is wrapping across 2-4 lines in a much narrower
+     column. */
+  .bar__meta {
+    font-size: 0.8rem;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+  }
+
   .nav__links {
     position: fixed;
     top: var(--nav-h);

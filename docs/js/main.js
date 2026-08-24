@@ -5,6 +5,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   initNav();
   initFaq();
+  initCardToggle();
   initTicketsCardVideo();
   initCountdown();
 });
@@ -26,6 +27,23 @@ function initNav() {
       a.addEventListener("click", () => links.classList.remove("is-open"))
     );
   }
+}
+
+/* ---------------- STACK CARD EXPAND/COLLAPSE ----------------
+   Replaces the old hover-to-expand interaction: each card's +/-
+   button toggles .is-expanded (driving the height/reveal transitions
+   in CSS) independently of the others. */
+
+function initCardToggle() {
+  document.querySelectorAll(".bar__toggle").forEach((btn) => {
+    const card = btn.closest(".stack-card");
+    if (!card) return;
+
+    btn.addEventListener("click", () => {
+      const expanded = card.classList.toggle("is-expanded");
+      btn.setAttribute("aria-expanded", String(expanded));
+    });
+  });
 }
 
 /* ---------------- TICKETS CARD VIDEO ----------------

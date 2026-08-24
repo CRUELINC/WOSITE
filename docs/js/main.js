@@ -77,24 +77,30 @@ function initNavContrast() {
 }
 
 /* ---------------- TICKETS CARD VIDEO ----------------
-   The card's background video only plays while hovered/focused (its
-   own hover-expand interaction) rather than autoplaying constantly —
-   it's a small strip most of the time and off-screen for large
-   stretches of a scroll, so there's no reason to keep decoding frames
-   the whole visit. */
+   Plays continuously (collapsed and hover-expanded alike) while any
+   part of the card is on screen, and pauses once it scrolls out of
+   view — playback control, not gated behind hover, but still not
+   decoding frames for the large stretches of a visit where the card
+   isn't visible at all. */
 
 function initTicketsCardVideo() {
   const card = document.querySelector(".card--tickets");
   const video = card && card.querySelector("video");
   if (!video) return;
 
-  const play = () => video.play().catch(() => {});
-  const pause = () => video.pause();
-
-  card.addEventListener("mouseenter", play);
-  card.addEventListener("mouseleave", pause);
-  card.addEventListener("focus", play);
-  card.addEventListener("blur", pause);
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+  observer.observe(card);
 }
 
 /* ---------------- COUNTDOWN ---------------- */

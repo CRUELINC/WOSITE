@@ -502,6 +502,7 @@ a {
 .stack-card {
   position: relative;
   width: 100%;
+  height: clamp(150px, 20vw, 190px);
   overflow: hidden;
   flex-shrink: 0;
   box-sizing: border-box;
@@ -511,19 +512,19 @@ a {
   border-bottom-right-radius: 20px;
   /* Cast a shadow downward onto the card underneath at the overlap seam. */
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-  transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
+  display: flex;
+  flex-direction: column;
+  /* Content row is pinned to the bottom in both states — only the
+     artwork area above it grows, matching the Figma collapsed/expanded
+     pair (the text sits in the same relative spot in both). */
+  justify-content: flex-end;
+  transition: height 0.5s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
 }
 
-.stack-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.24);
-}
-
-/* Card 2 (Pink) slides up underneath Card 1 (Yellow); Card 3 (Video)
+/* Card 2 (Pink) slides up underneath Card 1 (Yellow); Card 3 (Tickets)
    slides up underneath Card 2. Descending z-index so each card sits
    above the one below it, which now overlaps up and under it. */
 .stack-card:nth-child(1) {
-  flex-shrink: 0;
   margin-top: 0;
   z-index: 3;
 }
@@ -536,16 +537,17 @@ a {
 .stack-card:nth-child(3) {
   margin-top: -24px;
   z-index: 1;
-  /* Card 3 never gets an explicit height from JS — it's the sole
-     flex-grow item, so it always fills whatever space Cards 1 and 2
-     leave behind. Its bottom edge is therefore fixed at the
-     container's bottom by construction, and it's revealed purely by
-     the siblings above it shrinking, never by animating its own size
-     (which is what caused it to visibly jump before). */
-  flex: 1 1 0;
-  height: auto;
-  min-height: 170px;
-  background: #000;
+}
+
+/* Hover/focus expands the card to reveal its full-opacity artwork
+   (see .bar__art below) and lifts it above its overlapping neighbours
+   — otherwise a card resting at a lower z-index (Night, Tickets) would
+   grow taller but stay visually tucked behind the card above it. */
+.stack-card:hover,
+.stack-card:focus-within {
+  height: clamp(420px, 48vw, 560px);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+  z-index: 40;
 }
 
 .hero-section {
@@ -570,46 +572,100 @@ a {
 }
 
 .bar--free {
-  z-index: 30;
+  background: rgb(255, 228, 0);
+  color: rgb(123, 17, 137);
 }
 
 .bar--paid {
-  z-index: 20;
-  border-top: none !important;
-  outline: none !important;
+  background: rgb(255, 87, 251);
+  color: var(--white);
 }
 
-.bar--paid .bar__inner {
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+/* ---------------- CARD ARTWORK (hover reveal) ----------------
+   Sits behind .bar__inner at a low opacity so the card's own colour
+   dominates at rest (matching the Figma collapsed variant's faint
+   opacity-12 treatment), then fades up to full strength on hover as
+   the card itself grows taller — the same illustration/photo, just
+   more of it revealed and more vivid. */
+
+.bar__art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bar__art-img {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.12;
+  transition: opacity 0.5s var(--ease-smooth);
+}
+
+.stack-card:hover .bar__art-img,
+.stack-card:focus-within .bar__art-img {
+  opacity: 1;
+}
+
+.bar__art-img--left {
+  left: 0;
+  width: 68%;
+}
+
+.bar__art-img--right {
+  right: 0;
+  width: 40%;
+}
+
+.bar__art-img--full {
+  left: 0;
+  width: 100%;
 }
 
 .bar__inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 24px;
   padding: clamp(28px, 4vw, 56px) 2rem;
-  overflow: hidden;
-  border-radius: 0 0 24px 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  width: 100%;
 }
 
-.bar--free .bar__inner {
-  background:
-    linear-gradient(rgba(255, 228, 0, 0.88), rgba(255, 228, 0, 0.88)),
-    url("../assets/img/figma-waterworks1.webp");
-  background-size: cover;
-  background-position: center;
-  color: rgb(123, 17, 137);
+/* At rest the artwork sits at 12% opacity, so the card's own solid
+   colour already keeps the text legible. Expanded on hover, the
+   artwork goes to full strength and can get busy right behind the
+   text — this scrim (each card's own colour, fading upward into the
+   art) keeps the title/meta readable without flattening the reveal
+   above it. */
+.bar__inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-smooth);
 }
 
-.bar--paid .bar__inner {
-  background:
-    linear-gradient(rgba(255, 87, 251, 0.88), rgba(255, 87, 251, 0.88)),
-    url("../assets/img/figma-cruel2.webp");
-  background-size: cover;
-  background-position: center;
-  color: var(--white);
+.stack-card:hover .bar__inner::before,
+.stack-card:focus-within .bar__inner::before {
+  opacity: 1;
+}
+
+.bar--free .bar__inner::before {
+  background: linear-gradient(to top, rgba(255, 228, 0, 0.94), rgba(255, 228, 0, 0) 100%);
+}
+
+.bar--paid .bar__inner::before {
+  background: linear-gradient(to top, rgba(255, 87, 251, 0.94), rgba(255, 87, 251, 0) 100%);
+}
+
+.bar--tickets .bar__inner::before {
+  background: linear-gradient(to top, rgba(40, 6, 40, 0.9), rgba(40, 6, 40, 0) 100%);
 }
 
 .bar__meta {
@@ -643,23 +699,21 @@ a {
 /* ---------------- GET TICKETS CARD ---------------- */
 
 .bar--tickets {
-  display: block;
-  z-index: 10;
   cursor: pointer;
-}
-
-.bar--tickets .bar__inner {
-  position: relative;
-  background:
-    linear-gradient(160deg, rgba(60, 10, 60, 0.85), rgba(123, 17, 137, 0.75)),
-    url("../assets/img/content-headliner.jpg");
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(160deg, #3c0a3c, #7b1189);
   color: var(--white);
 }
 
-.bar--tickets .bar__inner::before {
-  content: "";
+.bar--tickets .bar__art-img--full {
+  opacity: 0.35;
+}
+
+.stack-card:hover .bar--tickets .bar__art-img--full,
+.stack-card:focus-within .bar--tickets .bar__art-img--full {
+  opacity: 0.8;
+}
+
+.bar__art-glow {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -669,13 +723,35 @@ a {
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 87, 251, 0.55), rgba(255, 87, 251, 0) 70%);
   filter: blur(2px);
-  pointer-events: none;
+  opacity: 0.4;
+  transition: opacity 0.5s var(--ease-smooth);
+}
+
+.stack-card:hover .bar__art-glow,
+.stack-card:focus-within .bar__art-glow {
+  opacity: 1;
 }
 
 .bar__title--tickets {
   position: relative;
   z-index: 1;
   text-shadow: 0 0 24px rgba(255, 87, 251, 0.6), 0.3px 0 currentColor, -0.3px 0 currentColor;
+}
+
+/* The plain "Get Tickets" title morphs into the Figma expanded
+   variant's pill button on hover, rather than swapping DOM nodes. */
+.bar__title--tickets span {
+  display: inline-block;
+  border-radius: 999px;
+  background: transparent;
+  transition: background 0.4s var(--ease-smooth), padding 0.4s var(--ease-smooth), box-shadow 0.4s var(--ease-smooth);
+}
+
+.stack-card:hover .bar__title--tickets span,
+.stack-card:focus-within .bar__title--tickets span {
+  background: var(--pink);
+  padding: 0.35em 0.9em;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .bar--tickets .bar__meta {

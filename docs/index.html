@@ -55,7 +55,11 @@
     <div class="stack-container">
 
       <!-- Card 1: Day (Yellow) -->
-      <div class="bar bar--free stack-card card--day">
+      <div class="bar bar--free stack-card card--day" tabindex="0">
+        <div class="bar__art">
+          <img class="bar__art-img bar__art-img--left" src="assets/img/figma-waterworks1.webp" alt="" loading="lazy" decoding="async" />
+          <img class="bar__art-img bar__art-img--right" src="assets/img/figma-stapark1.webp" alt="" loading="lazy" decoding="async" />
+        </div>
         <div class="bar__inner">
           <p class="bar__meta">12:00 PM – 5:00 PM</p>
           <h2 class="bar__title">Day</h2>
@@ -64,7 +68,10 @@
       </div>
 
       <!-- Card 2: Night (Pink) -->
-      <div class="bar bar--paid stack-card card--night">
+      <div class="bar bar--paid stack-card card--night" tabindex="0">
+        <div class="bar__art">
+          <img class="bar__art-img bar__art-img--full" src="assets/img/figma-cruel2.webp" alt="" loading="lazy" decoding="async" />
+        </div>
         <div class="bar__inner">
           <p class="bar__meta">4:00 PM – 10:00 PM</p>
           <h2 class="bar__title">Night</h2>
@@ -74,9 +81,13 @@
 
       <!-- Card 3: Get Tickets -->
       <a href="javascript:void(0)" class="bar bar--tickets stack-card card--tickets">
+        <div class="bar__art">
+          <img class="bar__art-img bar__art-img--full" src="assets/img/content-headliner.jpg" alt="" loading="lazy" decoding="async" />
+          <span class="bar__art-glow"></span>
+        </div>
         <div class="bar__inner">
           <p class="bar__meta">West of<br />Spadina</p>
-          <h2 class="bar__title bar__title--tickets">Get Tickets</h2>
+          <h2 class="bar__title bar__title--tickets"><span>Get Tickets</span></h2>
           <p class="bar__meta bar__meta--right">Saturday<br />September 19th, 2026</p>
         </div>
       </a>

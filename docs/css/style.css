@@ -589,13 +589,20 @@ a {
   transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s var(--ease-smooth);
 }
 
-/* Card 2 (Pink) slides up underneath Card 1 (Yellow); Card 3 (Tickets)
-   slides up underneath Card 2. Descending z-index (with gaps, see the
-   hover rules below) so each card sits above the one below it, which
-   now overlaps up and under it. */
+/* Card 2 (Pink) slides up over Card 1 (Yellow); Card 3 (Tickets)
+   slides up over Card 2. Ascending z-index (each later card in front
+   of the one before it) so each card's rounded TOP corner — and the
+   shadow it casts upward — overhangs the card above it, visible
+   rather than tucked underneath.
+
+   Because each card only ever grows downward (pushing later siblings
+   further down the flex column; earlier siblings never move), this
+   resting order alone is enough for every seam regardless of which
+   card is expanded — unlike the bottom-rounded-corner version this
+   replaced, no per-card z-index bump is needed on .is-expanded. */
 .stack-card:nth-child(1) {
   margin-top: 0;
-  z-index: 30;
+  z-index: 10;
 }
 
 .stack-card:nth-child(2) {
@@ -605,31 +612,7 @@ a {
 
 .stack-card:nth-child(3) {
   margin-top: -24px;
-  z-index: 10;
-}
-
-/* Clicking a card's +/- toggle (see .bar__toggle below) adds
-   .is-expanded, which expands the card to reveal its full-opacity
-   artwork (see .bar__art below). Growing a card only pushes the ones
-   below it further down the flex column — the card(s) above stay
-   exactly where they are — so the only z-index problem is the
-   expanding card covering up cards further down, which still need to
-   tuck under it the same way they do at rest. Bumping z-index by a
-   flat, fixed amount (rather than to one number above everything)
-   keeps it below whatever's resting above it, so that card's rounded
-   bottom corner still overhangs the expanded card's top edge exactly
-   like it does collapsed, instead of the expand flattening that seam
-   away. */
-.stack-card:nth-child(1).is-expanded {
-  z-index: 35;
-}
-
-.stack-card:nth-child(2).is-expanded {
-  z-index: 25;
-}
-
-.stack-card:nth-child(3).is-expanded {
-  z-index: 15;
+  z-index: 30;
 }
 
 .stack-card.is-expanded {

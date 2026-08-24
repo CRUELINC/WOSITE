@@ -350,6 +350,38 @@ a {
   margin: 0 0 18px;
 }
 
+.hero__countdown {
+  display: flex;
+  gap: clamp(16px, 3.5vw, 36px);
+  justify-content: center;
+  margin: 0 0 32px;
+}
+
+.hero__countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero__countdown-item strong {
+  font-family: var(--font-accent);
+  font-weight: 900;
+  color: var(--pink-deep);
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  line-height: 1;
+  -webkit-text-stroke: 0.5px currentColor;
+}
+
+.hero__countdown-item span {
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.55;
+}
+
 .hero__meta {
   display: flex;
   flex-wrap: wrap;

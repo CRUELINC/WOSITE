@@ -291,10 +291,30 @@ function initGSAPCardStack() {
         inFinalCollapseZone = true;
         const collapseDist = Math.max(1, getTotalDistance() - stepDistance);
         const t = Math.min(1, (px - stepDistance) / collapseDist);
-        gsap.set(container, {
-          height: fullH + (collapsedTotalH - fullH) * t,
-          y: expandedShiftY * (1 - t),
-        });
+        // Split into two sub-phases instead of interpolating height and
+        // y together (which fixes the container's BOTTOM edge and has
+        // it collapse from the top — the video shrinks upward, away
+        // from the footer below it). First shrink the height with y
+        // held constant at expandedShiftY, i.e. the container's TOP
+        // stays fixed and its bottom edge rises instead — Card 3
+        // visibly collapses from the bottom, revealing what's below.
+        // Only in the final stretch, once already fully collapsed,
+        // does y ease back to 0 — a brief settle so the container ends
+        // up exactly where collapsedTotalH naturally rests for a
+        // seamless handoff to normal flow at the real unpin instant.
+        const shrinkPortion = 0.75;
+        let h;
+        let y;
+        if (t < shrinkPortion) {
+          const localT = t / shrinkPortion;
+          h = fullH + (collapsedTotalH - fullH) * localT;
+          y = expandedShiftY;
+        } else {
+          const localT = (t - shrinkPortion) / (1 - shrinkPortion);
+          h = collapsedTotalH;
+          y = expandedShiftY * (1 - localT);
+        }
+        gsap.set(container, { height: h, y });
       }
     },
     onLeave: () => {

@@ -794,6 +794,10 @@ a {
   line-height: 1.4;
   opacity: 0.85;
   margin: 4px 0 0;
+  /* Prevents an orphan word wrapping onto its own line -- doesn't
+     affect the explicit <br> breaks Day/Night use between their two
+     lines, only stops either line wrapping further on its own. */
+  white-space: nowrap;
   -webkit-text-stroke: 0.6px currentColor;
   text-shadow: 0.25px 0 currentColor, -0.25px 0 currentColor;
 }

@@ -3,38 +3,11 @@
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  initSmoothScroll();
   initNav();
   initFaq();
   initTicketsCardVideo();
   initCountdown();
 });
-
-/* ---------------- SMOOTH SCROLL ----------------
-   A heavier, more luxurious momentum/glide on top of native scroll
-   (Lenis) — longer duration and a slightly reduced wheel multiplier
-   so each scroll takes noticeably longer to settle, with a soft
-   ease-out tail instead of snapping to each tick. Lenis re-dispatches
-   a native "scroll" event on every frame, so nothing else on the page
-   (IntersectionObserver usage, the fixed nav, etc.) needs to know
-   it's there. */
-
-function initSmoothScroll() {
-  if (typeof Lenis === "undefined") return;
-
-  const lenis = new Lenis({
-    duration: 1.8,
-    wheelMultiplier: 0.8,
-    touchMultiplier: 1.5,
-    easing: (t) => 1 - Math.pow(1 - t, 4),
-  });
-
-  function raf(time) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
-}
 
 /* ---------------- NAV ---------------- */
 

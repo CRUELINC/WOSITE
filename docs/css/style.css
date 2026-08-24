@@ -710,39 +710,36 @@ a {
   margin: 0;
 }
 
-/* ---------------- SITE MAP ---------------- */
-
-.site-map {
-  position: relative;
-  width: 100%;
-  padding: clamp(60px, 10vw, 140px) 24px;
-  background-image: url("../assets/img/backdrop-landing-baked.webp");
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: cover;
-  transform: scaleY(-1);
-}
-
-.site-map__inner {
-  transform: scaleY(-1);
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.site-map__inner img {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.25));
-}
-
-/* ---------------- FOOTER ---------------- */
+/* ---------------- SITE MAP + FOOTER ----------------
+   One continuous section/backdrop spans both the site map and the
+   footer logo, using the same splash texture as the rest of the site
+   (rather than a second, separate footer-only image) so there's no
+   seam between them. background-size: cover keeps that backdrop
+   filling the whole section regardless of how tall the map + logo
+   content ends up being. */
 
 .site-footer {
   position: relative;
   z-index: -1;
-  background: var(--black);
-  color: var(--white);
+  width: 100%;
   overflow: hidden;
+  background-image: url("../assets/img/backdrop-landing-baked.webp");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+  color: var(--white);
+}
+
+.site-footer__map {
+  padding: clamp(60px, 10vw, 140px) 24px 0;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.site-footer__map img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.25));
 }
 
 .site-footer__logo {
@@ -751,24 +748,9 @@ a {
   align-items: center;
   justify-content: center;
   padding: clamp(140px, 18vw, 220px) 24px;
-  background-color: var(--cream);
-  overflow: hidden;
-}
-
-.site-footer__logo::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("../assets/img/hero-backdrop-full.webp");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  transform: scaleY(-1);
 }
 
 .site-footer__logo img {
-  position: relative;
-  z-index: 1;
   width: min(46vw, 300px);
 }
 

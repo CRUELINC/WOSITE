@@ -1832,9 +1832,14 @@ a {
      staying pinned like the old nav countdown did. */
   .hero__countdown {
     position: absolute;
-    /* Below the date now (.hero__content sits at margin-top: 25vh,
-       see below) rather than between the wordmark and the date. */
-    top: calc(25vh + 210px);
+    /* Below the date now, rather than between the wordmark and the
+       date. .hero__content's own top offset from #hero is #hero's
+       padding-top (var(--nav-h)) plus its own margin-top (25vh, see
+       below) -- the previous attempt at this only accounted for the
+       25vh and landed ~130px too high, still above the date. Adding
+       var(--nav-h) plus enough extra to clear the date's own text
+       height puts it below instead. */
+    top: calc(var(--nav-h) + 25vh + 100px);
     left: 50%;
     transform: translateX(-50%);
     z-index: 5;

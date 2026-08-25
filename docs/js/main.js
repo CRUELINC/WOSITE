@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initNav();
   initFaq();
   initCardToggle();
+  initCardArtScroll();
   initTicketsCardVideo();
   initCountdown();
 });
@@ -44,6 +45,57 @@ function initCardToggle() {
       btn.setAttribute("aria-expanded", String(expanded));
     });
   });
+}
+
+/* ---------------- CARD ART SCROLL-LINK ----------------
+   Day/Night's artwork strip (.bar__art-track, repeated 4x in the
+   markup) shifts left-to-right while the page scrolls down, and
+   right-to-left while it scrolls up, tracking scroll delta instead of
+   auto-playing on a timer.
+
+   Each track's transform is `m - phase`, where phase is half a single
+   repeat's width and m is (offset + phase) wrapped into [0, repeatWidth)
+   -- offset itself is unbounded (it just accumulates scroll delta
+   forever), but re-centering the wrap around `phase` rather than 0
+   keeps the wrap point a full half-repeat away from the resting
+   position, so the reset never lands near where the page actually is
+   at rest. Because the track repeats every repeatWidth px, jumping by
+   a whole repeatWidth at the wrap point is pixel-identical to not
+   jumping at all -- that's what makes it invisible. */
+
+function initCardArtScroll() {
+  const tracks = Array.from(document.querySelectorAll(".bar__art-track"));
+  if (!tracks.length) return;
+
+  const state = tracks.map((track) => ({ track, repeatWidth: 0, offset: 0 }));
+
+  function measure() {
+    state.forEach((s) => {
+      s.repeatWidth = s.track.scrollWidth / 4;
+    });
+  }
+  measure();
+  window.addEventListener("load", measure);
+  window.addEventListener("resize", measure);
+
+  const SPEED = 0.5;
+  let lastY = window.scrollY;
+
+  function onScroll() {
+    const y = window.scrollY;
+    const deltaY = y - lastY;
+    lastY = y;
+
+    state.forEach((s) => {
+      if (!s.repeatWidth) return;
+      s.offset += deltaY * SPEED;
+      const phase = s.repeatWidth / 2;
+      const m = (((s.offset + phase) % s.repeatWidth) + s.repeatWidth) % s.repeatWidth;
+      s.track.style.transform = `translateX(${m - phase}px)`;
+    });
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
 }
 
 /* ---------------- TICKETS CARD VIDEO ----------------

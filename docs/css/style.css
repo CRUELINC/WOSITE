@@ -164,14 +164,20 @@ a {
    nav's own height (bottom: -50%) for a softer falloff, and the
    mask-image fades the blur itself out (not just the white tint) —
    without it, backdrop-filter would cut off sharply at the gradient's
-   edge instead of tapering away. */
+   edge instead of tapering away. Chains the #nav-glass-warp SVG
+   filter (feTurbulence + feDisplacementMap, defined inline near the
+   top of the body) after the blur so the backdrop is gently refracted
+   -- not just softened -- for a "liquid glass" look rather than flat
+   frosted glass. The -webkit- fallback drops the warp (Safari's
+   backdrop-filter doesn't reliably apply SVG filter references), so
+   it degrades to plain blur there instead of losing the blur too. */
 .nav::before {
   content: "";
   position: absolute;
   inset: 0;
   bottom: -50%;
   z-index: -1;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px) url(#nav-glass-warp);
   -webkit-backdrop-filter: blur(16px);
   background: linear-gradient(
     to bottom,
@@ -743,21 +749,21 @@ a {
   object-fit: contain;
 }
 
-/* Day/Night's artwork scrolls right-to-left as a slow, seamless,
-   infinitely-repeating strip instead of sitting static. The markup
+/* Day/Night's artwork scrolls left-right/right-left in step with page
+   scroll direction (driven by initCardArtScroll() in main.js), rather
+   than sitting static or auto-animating on a timer. The markup
    repeats the image (or image pair, for Day) four times in a row
-   inside .bar__art-track; animating the track exactly -25% (one
-   quarter of its own width, i.e. one repeat) loops back to a frame
-   that's pixel-identical to the start, so the reset is invisible.
-   Four repeats (rather than the two a seamless loop strictly needs)
-   is just a safety margin so there's still enough width to cover very
-   wide viewports without a gap showing before the loop */
+   inside .bar__art-track, which JS shifts by a fraction of the
+   scroll delta each frame — no transform here at rest; the script
+   sets it inline. Four repeats (rather than the two a seamless loop
+   strictly needs) is a safety margin so there's still enough width to
+   cover very wide viewports without a gap showing before the loop
+   wraps in either direction. */
 .bar--free .bar__art-track,
 .bar--paid .bar__art-track {
   display: flex;
   height: 100%;
   width: max-content;
-  animation: bar-art-scroll 32s linear infinite;
 }
 
 .bar--free .bar__art-img,
@@ -767,15 +773,6 @@ a {
   width: auto;
   max-width: none;
   flex-shrink: 0;
-}
-
-@keyframes bar-art-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-25%);
-  }
 }
 
 .bar__art-img--full {

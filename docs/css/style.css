@@ -68,6 +68,23 @@ body {
   overflow-x: hidden;
 }
 
+/* Fixed to the viewport bottom (not the document), invisible in
+   normal use since the opaque footer sits directly on top of it --
+   only shows up during mobile Safari's elastic overscroll, where it
+   keeps the reveal-past-the-end yellow (matching the footer) instead
+   of flashing the page's own cream background. */
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 200px;
+  z-index: -10;
+  background: rgb(255, 228, 0);
+  pointer-events: none;
+}
+
 img {
   max-width: 100%;
   display: block;
@@ -332,19 +349,13 @@ a {
     display: none;
   }
 
-  /* Just the countdown on a narrow nav -- the logo is redundant with
-     the WOS bubble graphic already filling the hero right below it. */
-  .nav__logo {
+  /* Nav no longer shows anything on mobile -- the logo is redundant
+     with the WOS bubble graphic filling the hero right below it, and
+     the countdown moves into the hero itself (.hero__countdown below)
+     so it scrolls away with the page instead of staying fixed. */
+  .nav__logo,
+  .nav__countdown {
     display: none;
-  }
-
-  .nav__center {
-    top: 0%;
-    transform: translate(-50%, -20%);
-  }
-
-  .nav__countdown-item strong {
-    font-size: 2rem;
   }
 
   .nav::before {
@@ -436,7 +447,13 @@ a {
   margin-top: -175px;
   display: flex;
   align-items: center;
-  z-index: 2;
+  /* Higher than .landing-backdrop's own z-index: 10 -- that's a
+     separate stacking context wrapping the hero's WOS graphic and
+     countdown, and now that this pulls up further into its territory
+     on mobile (see the 900px breakpoint), it needs to paint above
+     that whole context or the hero's higher-z-index content shows
+     through on top of the intro copy instead of behind it. */
+  z-index: 20;
 }
 
 .intro-backdrop::before {
@@ -451,9 +468,18 @@ a {
   transform: scale(1.05) scaleY(-1);
 }
 
-.intro-backdrop + .event-stack {
+.event-stack {
   position: relative;
-  z-index: 1;
+  /* Higher than .intro-backdrop's own z-index: 20 (bumped there to
+     clear .landing-backdrop above it) -- otherwise the intro's splash
+     backdrop paints over the card stack wherever they overlap.
+     (This used to be scoped as `.intro-backdrop + .event-stack`, an
+     adjacent-sibling selector that never actually matched -- despite
+     appearing next to each other in the markup, .intro-backdrop is
+     nested inside .hero-section while .event-stack is that section's
+     sibling, not .intro-backdrop's, so they aren't adjacent siblings
+     at all and the rule silently never applied.) */
+  z-index: 30;
   margin-top: -140px;
 }
 
@@ -477,6 +503,14 @@ a {
   height: 100vh;
   z-index: 3;
   transform: translateY(-4vh);
+}
+
+/* Desktop keeps the countdown in the fixed nav; mobile moves it here
+   instead (see the 720px breakpoint below) so it scrolls away with
+   the page rather than staying pinned, sitting above the WOS graphic
+   the same way .hero__date sits below it. */
+.hero__countdown {
+  display: none;
 }
 
 /* Entrance sequence: the WOS graphic (this .hero__layer pair) fades
@@ -563,6 +597,7 @@ a {
   transition: background-color 0.4s var(--ease-smooth);
   padding-top: clamp(20px, 2.4vw, 28px);
   padding-bottom: clamp(20px, 2.4vw, 28px);
+  box-shadow: none;
 }
 
 /* Swapped in by initStickyCtaContrast() (main.js) whenever the button
@@ -1161,6 +1196,7 @@ a {
 
 .bar__lineup li:first-child {
   font-size: 1.5em;
+  margin-bottom: 0.15em;
 }
 
 .bar__lineup li:not(:first-child) {
@@ -1388,14 +1424,19 @@ a {
 
 .site-footer {
   position: relative;
-  z-index: -1;
   width: 100%;
   overflow: hidden;
   color: var(--white);
   background: rgb(255, 228, 0);
   /* Pulled up under the Event Map card's rounded bottom corners/shadow
      (rather than sitting flush beneath it) so the card visibly
-     overhangs the footer instead of just meeting it edge-to-edge. */
+     overhangs the footer instead of just meeting it edge-to-edge.
+     Deliberately no z-index here -- the Event Map card already has a
+     high one (see .stack-card:nth-child(4)) that keeps it above the
+     footer where they overlap, and giving the footer its own negative
+     z-index put it behind .stack-section's own fading backdrop too,
+     letting the page's cream background show through as a stray tan
+     band right above the yellow. */
   margin-top: -80px;
   padding-top: 80px;
 }
@@ -1753,14 +1794,24 @@ a {
     background-position: center top;
     background-size: cover;
   }
-  /* .intro-backdrop's -175px pull-up is tuned for its desktop height
-     (set by aspect-ratio against a ~1240px-wide container). On a
-     narrow viewport that same box is much shorter, so the fixed
-     -175px drags the intro copy (and the CTA sitting right above it
-     in .hero__content) into an overlapping mess. Scaling it back
-     keeps the CTA clear. */
+  /* The fixed aspect-ratio is dropped -- it made this box far shorter
+     than .intro's own content (several wrapped lines plus its own
+     top/bottom padding), and since .intro-backdrop centers that
+     content with overflow: visible, the overflow above/below the
+     short box wasn't covered by the backdrop image at all, exposing
+     the page's plain background there instead. Auto height (matching
+     .intro's real height exactly) fixes that.
+
+     -175px (the desktop pull-up) was scaled back here to -60px
+     because it used to drag the intro copy into the CTA that lived in
+     .hero__content right above it -- but that CTA is a viewport-fixed
+     element elsewhere in the DOM now (see .hero__sticky-cta), not a
+     sibling here, so that collision risk is gone. Pulled up much
+     further instead, closing the visible gap between the hero's own
+     backdrop (which fades to plain near its bottom) and this one. */
   .intro-backdrop {
-    margin-top: -60px;
+    aspect-ratio: auto;
+    margin-top: -260px;
   }
 }
 
@@ -1774,6 +1825,25 @@ a {
   .hero__layer--mid,
   .hero__layer--top {
     transform: translateY(-10vh);
+  }
+
+  /* Sits above the WOS graphic, roughly the same distance from it as
+     .hero__date sits below -- scrolls away with the page instead of
+     staying pinned like the old nav countdown did. */
+  .hero__countdown {
+    position: absolute;
+    top: 22vh;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    color: var(--black);
+  }
+
+  .hero__countdown .nav__countdown-item strong {
+    font-size: 2rem;
   }
 
   /* The 30vw term barely contributes at narrow widths, so
@@ -1905,7 +1975,7 @@ a {
      component barely contributes at narrow widths -- bumped up so
      they read as more substantial on a phone screen. */
   .hero__date {
-    font-size: 2rem;
+    font-size: 1.85rem;
   }
 
   /* The clamp()'s vw term barely contributes at narrow widths, so
@@ -1913,7 +1983,7 @@ a {
      lines -- bumped up so it wraps into fuller, more substantial
      lines on a phone screen. */
   .intro__copy {
-    font-size: 2.3rem;
+    font-size: 1.95rem;
     line-height: 1;
   }
 

@@ -1125,8 +1125,18 @@ a {
   opacity: 1;
 }
 
-.bar__lineup li:nth-child(even) {
+.bar__lineup li:not(:first-child) {
   color: #ffe400;
+  -webkit-text-stroke-width: 0.3px;
+  text-shadow: 0.1px 0 currentColor, -0.1px 0 currentColor;
+}
+
+.bar__lineup li:first-child {
+  font-size: 1.5em;
+}
+
+.bar__lineup li:not(:first-child) {
+  font-size: 0.75em;
 }
 
 /* Get Tickets / Event Map swap to their shorter forms (Tickets / Map)
@@ -1750,6 +1760,17 @@ a {
      crowding the pill/toggle and title above it. */
   .bar__lineup {
     font-size: clamp(2.7rem, 9.8vw, 3.6rem);
+  }
+
+  /* Mele's 1.5x/others' 0.75x split (tuned for the desktop banner)
+     reads as too extreme a jump on a narrow card -- narrower the gap
+     here instead. */
+  .bar__lineup li:first-child {
+    font-size: 1.15em;
+  }
+
+  .bar__lineup li:not(:first-child) {
+    font-size: 0.9em;
   }
 
   .stack-card.is-expanded .bar__lineup {

@@ -1384,6 +1384,13 @@ a {
     transform: translateY(-17vh);
   }
 
+  /* The 30vw term barely contributes at narrow widths, so
+     .stack-card was pinned to its 230px clamp() minimum on mobile —
+     shorter fixed height here instead. */
+  .stack-card {
+    height: 190px;
+  }
+
   /* 75vh was tuned against the desktop hero, where the WOS graphic
      fills much more of that space -- on a narrow/tall mobile
      viewport it's comparatively small, leaving a big empty gap before

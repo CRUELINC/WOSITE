@@ -950,6 +950,14 @@ a {
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-smooth);
+}
+
+.stack-card.is-expanded .bar__art-cta {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .bar--tickets .bar__art-img--full {

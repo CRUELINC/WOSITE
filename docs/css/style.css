@@ -1824,7 +1824,7 @@ a {
      graphic closer to the nav instead of sitting mid-screen. */
   .hero__layer--mid,
   .hero__layer--top {
-    transform: translateY(-10vh);
+    transform: translateY(-18vh);
   }
 
   /* Sits above the WOS graphic, roughly the same distance from it as
@@ -1832,18 +1832,34 @@ a {
      staying pinned like the old nav countdown did. */
   .hero__countdown {
     position: absolute;
-    top: 22vh;
+    /* Below the date now (.hero__content sits at margin-top: 25vh,
+       see below) rather than between the wordmark and the date. */
+    top: calc(25vh + 210px);
     left: 50%;
     transform: translateX(-50%);
     z-index: 5;
     display: flex;
     align-items: baseline;
-    gap: 14px;
+    /* Same width as the WEST OF SPADINA wordmark above it (see
+       .hero__layer--top img), spread edge-to-edge across it instead
+       of a fixed gap between digits. */
+    width: min(70vw, 700px, 67vh);
     color: var(--black);
   }
 
+  /* Each number gets an equal-width column (rather than space-between
+     on the row, which let a digit going from single to double digits
+     push every number after it sideways) so they hold their positions
+     as the count ticks down. font-variant-numeric keeps the digits
+     themselves from shifting the item's own centre too. */
+  .hero__countdown .nav__countdown-item {
+    flex: 1;
+    justify-content: center;
+  }
+
   .hero__countdown .nav__countdown-item strong {
-    font-size: 2rem;
+    font-size: 3.4rem;
+    font-variant-numeric: tabular-nums;
   }
 
   /* The 30vw term barely contributes at narrow widths, so

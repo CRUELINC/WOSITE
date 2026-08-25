@@ -153,6 +153,11 @@ a {
   background: var(--black);
   color: var(--white);
   font-size: 0;
+  /* .btn's horizontal padding is larger than its vertical padding, so
+     the circle sat with a bigger gap to the button's right edge than
+     it has above/below. Pulling it in by exactly that difference
+     equalizes the gap on all three sides. */
+  margin-right: calc(clamp(18px, 2.4vw, 26px) - clamp(40px, 5vw, 60px));
 }
 
 .btn__arrow::before,

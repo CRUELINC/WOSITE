@@ -1195,12 +1195,13 @@ a {
 }
 
 .bar__lineup li:first-child {
-  font-size: 1.5em;
+  font-size: 1.15em;
   margin-bottom: 0.15em;
 }
 
 .bar__lineup li:not(:first-child) {
-  font-size: 0.75em;
+  font-size: 0.95em;
+  margin-top: -0.1em;
 }
 
 /* Get Tickets / Event Map swap to their shorter forms (Tickets / Map)

@@ -217,6 +217,19 @@ a {
   display: flex;
   align-items: center;
   background: transparent;
+  /* This bar spans the full width even though only the centred
+     logo/countdown actually sits in it -- without this, the empty
+     space to either side still captured clicks/taps meant for
+     whatever's scrolled underneath (e.g. a card's +/- toggle passing
+     behind the nav). Re-enabled on the actual interactive content
+     below. */
+  pointer-events: none;
+}
+
+.nav__logo,
+.nav__burger,
+.nav__links {
+  pointer-events: auto;
 }
 
 /* Progressive blur/fade to white behind the nav, so the logo and
@@ -319,14 +332,19 @@ a {
     display: none;
   }
 
-  /* Logo + countdown sat noticeably taller than the frosted glass
-     panel behind them at this width, visibly spilling past its
-     softened lower edge (see .nav::before's fade) instead of reading
-     as contained within it -- scaled down as one unit to bring them
-     back inside it. */
+  /* Just the countdown on a narrow nav -- the logo is redundant with
+     the WOS bubble graphic already filling the hero right below it. */
+  .nav__logo {
+    display: none;
+  }
+
   .nav__center {
     top: 0%;
-    transform: translate(-50%, -20%) scale(0.8);
+    transform: translate(-50%, -20%);
+  }
+
+  .nav__countdown-item strong {
+    font-size: 2rem;
   }
 
   .nav::before {
@@ -1086,16 +1104,11 @@ a {
   transition: opacity 0.4s var(--ease-smooth);
 }
 
-/* Hides Day/Night/Tickets' title once expanded, handing the space
-   over to whatever's revealed underneath (lineup, artwork, video). */
+/* Hides every card's title once expanded, handing the space over to
+   whatever's revealed underneath (lineup, artwork, video, or the map
+   legend/image). */
 .stack-card.is-expanded .bar__title {
   opacity: 0;
-}
-
-/* ...except Event Map's, which has no such reveal and stays as the
-   card's only heading in both states. */
-.bar--map.is-expanded .bar__title {
-  opacity: 1;
 }
 
 /* Night's lineup -- positioned behind the pop-art banner (lower
@@ -1837,15 +1850,18 @@ a {
     justify-content: flex-start;
     align-items: stretch;
     overflow-y: auto;
-    padding: 100px 24px 56px;
-    gap: 24px;
+    /* Title now fades out on expand (see .stack-card.is-expanded
+       .bar__title) rather than staying put, so this no longer needs
+       clearance for it -- just enough for the pill/toggle row. */
+    padding: 56px 24px 24px;
+    gap: 16px;
   }
 
   .map-content__img {
     order: -1;
+    max-height: 34vh;
     max-width: 100%;
     width: 100%;
-    max-height: 45vh;
     align-self: center;
     margin: 0;
     object-position: center;
@@ -1860,7 +1876,7 @@ a {
   }
 
   .map-legend {
-    gap: 6px;
+    gap: 0;
     align-items: flex-start;
   }
 

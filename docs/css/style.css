@@ -1396,8 +1396,8 @@ a {
   .bar__pill {
     top: 14px;
     left: 14px;
-    height: 32px;
-    font-size: 0.7rem;
+    height: 34px;
+    font-size: 0.95rem;
     padding: 0 12px;
   }
 

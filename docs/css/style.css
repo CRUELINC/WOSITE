@@ -97,7 +97,7 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 18px;
   padding: clamp(12px, 1.6vw, 18px) clamp(40px, 5vw, 60px);
   border-radius: 999px;
   border: none;
@@ -151,7 +151,7 @@ a {
   height: 3rem;
   border-radius: 50%;
   background: var(--black);
-  color: var(--white);
+  color: var(--yellow);
   font-size: 0;
   /* .btn's horizontal padding is larger than its vertical padding, so
      the circle sat with a bigger gap to the button's right edge than
@@ -175,19 +175,19 @@ a {
 
 .btn__arrow::before {
   top: 50%;
-  left: 29%;
-  width: 42%;
-  height: 2.5px;
+  left: 33%;
+  width: 32%;
+  height: 2px;
   transform: translateY(-50%);
 }
 
 .btn__arrow::after {
   top: 50%;
-  right: 29%;
-  width: 9px;
-  height: 9px;
-  border-top: 2.5px solid currentColor;
-  border-right: 2.5px solid currentColor;
+  right: 33%;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
   background: transparent;
   transform: translateY(-50%) rotate(45deg);
 }

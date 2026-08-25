@@ -137,23 +137,48 @@ a {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
 }
 
-/* Fixed rem sizing (rather than chained em, which was coming out
-   smaller than intended and reading as slightly misaligned) so the
-   circle is a consistent, generous size and stays precisely centered
-   on the button's own cross-axis regardless of font-size. */
+/* The arrow itself is drawn from two bars (like the +/- toggle
+   elsewhere on the site) rather than relying on the "→" glyph text --
+   Neue Bit doesn't have its own arrow character, so that glyph was
+   rendering thin in a fallback font instead of the bold, chunky look
+   the rest of the site's icons have. */
 .btn__arrow {
+  position: relative;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: center;
-  width: 2.4rem;
-  height: 2.4rem;
   flex-shrink: 0;
+  align-self: center;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   background: var(--black);
   color: var(--white);
-  font-size: 1.15rem;
-  line-height: 1;
+  font-size: 0;
+}
+
+.btn__arrow::before,
+.btn__arrow::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+}
+
+.btn__arrow::before {
+  top: 50%;
+  left: 29%;
+  width: 42%;
+  height: 2.5px;
+  transform: translateY(-50%);
+}
+
+.btn__arrow::after {
+  top: 50%;
+  right: 29%;
+  width: 9px;
+  height: 9px;
+  border-top: 2.5px solid currentColor;
+  border-right: 2.5px solid currentColor;
+  background: transparent;
+  transform: translateY(-50%) rotate(45deg);
 }
 
 .btn--outline {

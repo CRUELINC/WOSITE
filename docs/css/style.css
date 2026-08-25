@@ -861,6 +861,12 @@ a {
   pointer-events: none;
 }
 
+/* Night's banner sits lower than Day/Tickets' -- opens up more room
+   above it for the lineup rising up from behind it. */
+.card--night .bar__art {
+  bottom: -60px;
+}
+
 .bar__art-img {
   position: absolute;
   top: 0;
@@ -962,6 +968,32 @@ a {
   opacity: 0.9;
 }
 
+/* Header label, centred between the time pill (left) and the
+   +/- toggle (right) -- only appears once the card is expanded rather
+   than sitting there at rest alongside the collapsed title. */
+.bar__eyebrow {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  text-align: center;
+  margin: 0;
+  font-family: var(--font-accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: clamp(0.95rem, 1.45vw, 1.15rem);
+  line-height: 40px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease-smooth);
+}
+
+.stack-card.is-expanded .bar__eyebrow {
+  opacity: 0.9;
+}
+
 /* Stacked left-aligned pills directly under the time/date pill, on
    every viewport -- not part of the centred title block at all. */
 .bar__locations {
@@ -1007,9 +1039,11 @@ a {
   transition: opacity 0.5s var(--ease-smooth);
 }
 
-.stack-card.is-expanded .bar__inner::before {
-  opacity: 1;
-}
+/* Titles now fade out on expand (see .stack-card.is-expanded
+   .bar__title above), so this scrim -- originally there just to keep
+   the title readable over the artwork -- no longer has anything left
+   to protect, and was showing through as a stray colour wash (e.g.
+   pink over Night's lineup). Left at opacity: 0 in both states. */
 
 .bar--free .bar__inner::before {
   background: linear-gradient(to bottom, rgba(255, 228, 0, 0.94), rgba(255, 228, 0, 0) 100%);
@@ -1034,6 +1068,65 @@ a {
   margin: 0;
   -webkit-text-stroke: 0.4px currentColor;
   text-shadow: 0.15px 0 currentColor, -0.15px 0 currentColor;
+  transition: opacity 0.4s var(--ease-smooth);
+}
+
+/* Hides Day/Night/Tickets' title once expanded, handing the space
+   over to whatever's revealed underneath (lineup, artwork, video). */
+.stack-card.is-expanded .bar__title {
+  opacity: 0;
+}
+
+/* ...except Event Map's, which has no such reveal and stays as the
+   card's only heading in both states. */
+.bar--map.is-expanded .bar__title {
+  opacity: 1;
+}
+
+/* Night's lineup -- positioned behind the pop-art banner (lower
+   z-index than .bar__art) and anchored from the card's TOP edge
+   (which never moves -- cards only ever grow downward) rather than
+   its bottom. Anchoring from the bottom instead would tie its
+   position to the same edge .bar__art is pinned to, which drags
+   downward as the card's height animates open -- since that downward
+   drag is much bigger than the lineup's own reposition, it visibly
+   slid down instead of up. Anchored from the stationary top, its
+   `top` transition is the only motion, so it cleanly rises while the
+   bottom-pinned artwork is carried down by the same height change. */
+.bar__lineup {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(clamp(600px, 75vw, 860px) - clamp(260px, 32.5vw, 380px) + 120px);
+  z-index: -1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-family: var(--font-accent);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: clamp(4.6rem, 9.4vw, 8rem);
+  line-height: 0.68;
+  text-align: center;
+  /* Neue Bit only ships one weight -- thickened with a stroke instead
+     of a heavier font file, same technique used on .bar__title. */
+  -webkit-text-stroke: 0.6px currentColor;
+  text-shadow: 0.2px 0 currentColor, -0.2px 0 currentColor;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-smooth), top 0.8s var(--ease-smooth);
+}
+
+.stack-card.is-expanded .bar__lineup {
+  top: calc(clamp(600px, 75vw, 860px) - clamp(260px, 32.5vw, 380px) - 310px);
+  opacity: 1;
+}
+
+.bar__lineup li:nth-child(even) {
+  color: #ffe400;
 }
 
 /* Get Tickets / Event Map swap to their shorter forms (Tickets / Map)
@@ -1274,12 +1367,20 @@ a {
   z-index: 1;
 }
 
+/* Grid rather than flex -- with flex + justify-content: center, the
+   whole Partners/logo/Socials group centers as one block, so the logo
+   only sits at the midpoint of that block, not the true page centre,
+   whenever the two side columns' content widths differ (which they
+   do: three partner names vs. three shorter social links). A
+   1fr/auto/1fr grid gives both side columns equal, symmetric space no
+   matter how much content either holds, so the middle column -- the
+   logo -- lands on the actual centre. */
 .site-footer__row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: center;
-  gap: clamp(60px, 10vw, 140px);
-  padding: clamp(140px, 18vw, 220px) 24px;
+  gap: clamp(24px, 4vw, 64px);
+  padding: clamp(140px, 18vw, 220px) clamp(24px, 8vw, 140px);
   text-align: center;
 }
 
@@ -1644,6 +1745,25 @@ a {
     height: 190px;
   }
 
+  /* Smaller and lower on narrow cards -- the desktop size/position was
+     tuned against a wider banner and sat too big and too high,
+     crowding the pill/toggle and title above it. */
+  .bar__lineup {
+    font-size: clamp(2.7rem, 9.8vw, 3.6rem);
+  }
+
+  .stack-card.is-expanded .bar__lineup {
+    top: calc(clamp(600px, 75vw, 860px) - clamp(260px, 32.5vw, 380px) - 210px);
+  }
+
+  /* The -60px push used on wider viewports (see .card--night .bar__art
+     above) crops too much of the building off the bottom of a short
+     mobile viewport -- back to flush with the card's own bottom edge
+     here instead. */
+  .card--night .bar__art {
+    bottom: 50px;
+  }
+
   /* Site Map's legend-beside-image layout doesn't fit a narrow
      viewport -- stack the map on top and the numbered legend below it,
      and let the card grow tall enough (with its own scroll) to hold
@@ -1741,8 +1861,12 @@ a {
      lines -- bumped up so it wraps into fuller, more substantial
      lines on a phone screen. */
   .intro__copy {
-    font-size: 1.9rem;
-    line-height: 1.3;
+    font-size: 2.3rem;
+    line-height: 1;
+  }
+
+  .intro {
+    padding-top: 20px;
   }
 
   .hero__sticky-cta {
@@ -1816,9 +1940,20 @@ a {
     display: flex;
   }
   .site-footer__row {
+    display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 40px;
     padding: 80px 24px;
+  }
+
+  .site-footer__logo {
+    width: 100%;
+  }
+
+  .site-footer__logo img {
+    display: block;
+    margin: 0 auto;
   }
 
   .site-footer__col--left,

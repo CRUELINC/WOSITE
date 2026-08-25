@@ -1381,7 +1381,7 @@ a {
      graphic closer to the nav instead of sitting mid-screen. */
   .hero__layer--mid,
   .hero__layer--top {
-    transform: translateY(-24vh);
+    transform: translateY(-21vh);
   }
 
   /* The 30vw term barely contributes at narrow widths, so

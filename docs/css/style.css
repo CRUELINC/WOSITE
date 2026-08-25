@@ -1381,7 +1381,7 @@ a {
      graphic closer to the nav instead of sitting mid-screen. */
   .hero__layer--mid,
   .hero__layer--top {
-    transform: translateY(-9vh);
+    transform: translateY(-17vh);
   }
 
   /* 75vh was tuned against the desktop hero, where the WOS graphic

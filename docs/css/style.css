@@ -1397,7 +1397,7 @@ a {
      the date/CTA below. Pulling this up brings them closer to the
      logo instead of stranding them near the bottom of the screen. */
   .hero__content {
-    margin-top: 40vh;
+    margin-top: 32vh;
   }
 
   /* Both were pinned to their clamp() minimums on mobile since the vw

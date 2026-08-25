@@ -792,19 +792,27 @@ a {
   text-align: center;
 }
 
+/* Corner-pinned on the left, mirroring .bar__toggle on the right —
+   same 40px diameter/height so the two line up. */
 .bar__pill {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 20px;
-  margin: 0 0 4px;
+  height: 40px;
+  padding: 0 20px;
+  margin: 0;
   border-radius: 999px;
   border: 1.5px solid currentColor;
   font-family: var(--font-accent);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  font-size: clamp(0.85rem, 1.3vw, 1.05rem);
+  font-size: clamp(0.95rem, 1.45vw, 1.15rem);
+  white-space: nowrap;
   opacity: 0.9;
 }
 
@@ -898,31 +906,12 @@ a {
   opacity: 0.8;
 }
 
-.bar__art-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: clamp(160px, 22vw, 260px);
-  height: clamp(160px, 22vw, 260px);
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 87, 251, 0.55), rgba(255, 87, 251, 0) 70%);
-  filter: blur(2px);
-  opacity: 0.4;
-  transition: opacity 0.5s var(--ease-smooth);
-}
-
-.stack-card.is-expanded .bar__art-glow {
-  opacity: 1;
-}
-
 .bar__title--tickets {
   position: relative;
   z-index: 1;
-  text-shadow: 0 0 24px rgba(255, 87, 251, 0.6), 0.3px 0 currentColor, -0.3px 0 currentColor;
+  text-shadow: 0.3px 0 currentColor, -0.3px 0 currentColor;
 }
 
-.bar--tickets .bar__pill,
 .bar--tickets .bar__location {
   position: relative;
   z-index: 1;
@@ -1317,8 +1306,18 @@ a {
   }
 
   .bar__pill {
+    top: 14px;
+    left: 14px;
+    height: 32px;
     font-size: 0.7rem;
-    padding: 5px 14px;
+    padding: 0 12px;
+  }
+
+  .bar__toggle {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
   }
 
   .nav__links {

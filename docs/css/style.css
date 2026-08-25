@@ -622,8 +622,12 @@ a {
   border-bottom-right-radius: 0;
   /* Cast a shadow upward onto the card above at the overlap seam. */
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
-  /* .bar__inner (the text) is positioned via its own top/transform,
-     not flex alignment here — see .bar__inner below for why. */
+  display: flex;
+  flex-direction: column;
+  /* Constant — never overridden for .is-expanded — so .bar__inner
+     (the text) always sits at the same fixed spot regardless of the
+     card's own height, instead of moving as it expands/collapses. */
+  justify-content: flex-start;
   transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s var(--ease-smooth);
 }
 
@@ -813,34 +817,23 @@ a {
   width: 100%;
 }
 
-/* Positioned with top/transform instead of the parent's
-   justify-content, because justify-content can't be transitioned —
-   switching it snaps the text straight to its new position instead of
-   sliding. top/transform are both animatable, so expanding eases the
-   text smoothly up from center to pinned-at-top, and collapsing eases
-   it back down, instead of a snap in one direction and a slide in the
-   other. */
+/* Fixed position, same in both collapsed and expanded states — no
+   movement, no transition. (A top/transform-based slide between
+   "centered at rest" and "pinned at top expanded" was tried, but with
+   the card's own height animating at the same time, the text's
+   position was fighting two moving references at once and visibly
+   dipped down then back up instead of moving in one direction.) */
 .bar__inner {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
   padding: clamp(32px, 5vw, 64px) clamp(48px, 14vw, 220px);
   width: 100%;
   text-align: center;
-  transition: top 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.stack-card.is-expanded .bar__inner {
-  top: 0;
-  transform: translateY(0);
 }
 
 /* Corner-pinned on the left, mirroring .bar__toggle on the right —

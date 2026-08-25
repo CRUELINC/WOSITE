@@ -622,14 +622,8 @@ a {
   border-bottom-right-radius: 0;
   /* Cast a shadow upward onto the card above at the overlap seam. */
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
-  display: flex;
-  flex-direction: column;
-  /* Vertically centered at rest. On expand this switches to
-     flex-start (see below) so the text stays pinned at the top, above
-     the artwork banner (which is anchored to the bottom — see
-     .bar__art), instead of drifting into the middle of a now much
-     taller card. */
-  justify-content: center;
+  /* .bar__inner (the text) is positioned via its own top/transform,
+     not flex alignment here — see .bar__inner below for why. */
   transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s var(--ease-smooth);
 }
 
@@ -666,7 +660,6 @@ a {
      previously this replaced the seam shadow outright, which is why
      it visibly vanished at the top edge once a card grew. */
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18), 0 24px 48px rgba(0, 0, 0, 0.3);
-  justify-content: flex-start;
 }
 
 /* +/- toggle, corner-pinned on every card. The two bars forming the
@@ -820,8 +813,19 @@ a {
   width: 100%;
 }
 
+/* Positioned with top/transform instead of the parent's
+   justify-content, because justify-content can't be transitioned —
+   switching it snaps the text straight to its new position instead of
+   sliding. top/transform are both animatable, so expanding eases the
+   text smoothly up from center to pinned-at-top, and collapsing eases
+   it back down, instead of a snap in one direction and a slide in the
+   other. */
 .bar__inner {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -831,6 +835,12 @@ a {
   padding: clamp(32px, 5vw, 64px) clamp(48px, 14vw, 220px);
   width: 100%;
   text-align: center;
+  transition: top 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stack-card.is-expanded .bar__inner {
+  top: 0;
+  transform: translateY(0);
 }
 
 /* Corner-pinned on the left, mirroring .bar__toggle on the right —

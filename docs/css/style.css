@@ -385,6 +385,43 @@ a {
   z-index: 3;
 }
 
+/* Entrance sequence: the WOS graphic (this .hero__layer pair) fades
+   in first, then everything else (nav + the date/CTA below it) fades
+   in a second later -- staggered on purpose so there's a beat for the
+   splash backdrop image to actually finish loading in before the
+   rest of the page appears on top of it. */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero__layer--mid,
+.hero__layer--top {
+  opacity: 0;
+  animation: page-fade-in 0.9s ease forwards;
+}
+
+.nav,
+.hero__content {
+  opacity: 0;
+  animation: page-fade-in 0.9s ease forwards;
+  animation-delay: 1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__layer--mid,
+  .hero__layer--top,
+  .nav,
+  .hero__content {
+    opacity: 1;
+    animation: none;
+  }
+}
+
 .hero__layer--mid {
   display: flex;
   align-items: center;

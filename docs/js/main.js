@@ -78,8 +78,21 @@ function initCardArtScroll() {
     });
   }
   measure();
-  window.addEventListener("load", measure);
   window.addEventListener("resize", measure);
+
+  /* Each track's images use loading="lazy", so at the moment measure()
+     first runs (and even after the window's own "load" event) some of
+     them may still be unloaded placeholders with the wrong intrinsic
+     width. scrollWidth/4 (the repeat period the wrap math depends on)
+     is then wrong too, so the drift wraps at the wrong point -- seen
+     as the strip travelling only partway before visibly snapping.
+     Re-measuring every time any tracked image finishes loading keeps
+     repeatWidth correct as each one comes in. */
+  tracks.forEach((track) => {
+    track.querySelectorAll("img").forEach((img) => {
+      if (!img.complete) img.addEventListener("load", measure, { once: true });
+    });
+  });
 
   const PX_PER_SECOND = 24;
   let direction = 1; // 1 = left-to-right (default/scrolling down), -1 = right-to-left (scrolling up)
@@ -94,6 +107,23 @@ function initCardArtScroll() {
   }
 
   window.addEventListener("scroll", onScroll, { passive: true });
+
+  /* The strip keeps drifting even while a card is collapsed (opacity
+     0.07, barely visible) or off-screen, so by the time someone
+     expands it the artwork can be paused mid-image at an arbitrary,
+     inconsistent crop -- a different one every time. Snapping each
+     track's offset back to 0 the moment its card expands means it
+     always reveals the same aligned first frame before resuming its
+     drift, instead of "spawning in" wherever it happened to be. */
+  document.querySelectorAll(".bar__toggle").forEach((btn) => {
+    const card = btn.closest(".stack-card");
+    const track = card && card.querySelector(".bar__art-track");
+    const s = track && state.find((st) => st.track === track);
+    if (!s) return;
+    btn.addEventListener("click", () => {
+      if (card.classList.contains("is-expanded")) s.offset = 0;
+    });
+  });
 
   let lastTime = performance.now();
 

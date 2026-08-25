@@ -236,8 +236,8 @@ a {
   inset: 0;
   bottom: -50%;
   z-index: -1;
-  backdrop-filter: blur(16px) url(#nav-glass-warp);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(8px) url(#nav-glass-warp);
+  -webkit-backdrop-filter: blur(8px);
   background: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.45) 0%,
@@ -1003,6 +1003,12 @@ a {
   text-shadow: 0.15px 0 currentColor, -0.15px 0 currentColor;
 }
 
+/* Get Tickets / Event Map swap to their shorter forms (Tickets / Map)
+   on narrow cards -- see the 720px breakpoint below. */
+.bar__title-short {
+  display: none;
+}
+
 /* ---------------- GET TICKETS CARD ---------------- */
 
 .bar--tickets {
@@ -1613,6 +1619,30 @@ a {
     height: min(85vh, 720px);
   }
 
+  /* Signals there's more of the scrollable legend below the fold,
+     fading it out under a soft blur instead of cutting it off with a
+     hard edge. */
+  .bar--map.is-expanded::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 130px;
+    z-index: 4;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.6) 55%, rgba(255, 255, 255, 0.92));
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
+    /* Masks the blur itself so it ramps in gradually top-to-bottom
+       (matching the white gradient above it) instead of the flat,
+       uniformly-blurred band a plain backdrop-filter produces. */
+    mask-image: linear-gradient(to bottom, transparent, black 75%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 75%);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
+
   .map-content {
     flex-direction: column;
     justify-content: flex-start;
@@ -1686,6 +1716,14 @@ a {
     padding-top: 60px;
   }
 
+  .bar__title-full {
+    display: none;
+  }
+
+  .bar__title-short {
+    display: inline;
+  }
+
   /* Tighter offsets/sizing to match the smaller pill/card dimensions
      set below for narrow viewports. */
   .bar__locations {
@@ -1738,6 +1776,16 @@ a {
     flex-direction: column;
     gap: 40px;
     padding: 80px 24px;
+  }
+
+  .site-footer__col--left,
+  .site-footer__col--right {
+    text-align: center;
+  }
+
+  .site-footer__col--left .site-footer__list,
+  .site-footer__col--right .site-footer__list {
+    align-items: center;
   }
 
   .sitemap-diagram {

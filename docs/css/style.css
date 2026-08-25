@@ -1209,6 +1209,32 @@ a {
   display: none;
 }
 
+/* Day's lineup isn't booked yet -- placeholder text filling the same
+   empty middle space Night's lineup occupies, revealed on expand the
+   same way. */
+.bar__coming-soon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 35%;
+  transform: translateY(-50%);
+  z-index: 0;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-accent);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  font-size: clamp(3.6rem, 7vw, 5.8rem);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s var(--ease-smooth);
+}
+
+.stack-card.is-expanded .bar__coming-soon {
+  opacity: 1;
+}
+
 /* ---------------- GET TICKETS CARD ---------------- */
 
 .bar--tickets {

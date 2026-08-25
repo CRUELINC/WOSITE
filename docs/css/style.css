@@ -1351,13 +1351,36 @@ a {
 }
 
 @media (max-width: 720px) {
+  /* Both layers centre their image in their own full 100vh box, which
+     sits lower than it needs to on a narrow/tall mobile viewport where
+     there's a lot of empty height above and below. Shifting both up
+     together (they need to move as one pair, or the bubble and
+     wordmark fall out of alignment with each other) brings the
+     graphic closer to the nav instead of sitting mid-screen. */
+  .hero__layer--mid,
+  .hero__layer--top {
+    transform: translateY(-9vh);
+  }
+
   /* 75vh was tuned against the desktop hero, where the WOS graphic
      fills much more of that space -- on a narrow/tall mobile
      viewport it's comparatively small, leaving a big empty gap before
      the date/CTA below. Pulling this up brings them closer to the
      logo instead of stranding them near the bottom of the screen. */
   .hero__content {
-    margin-top: 56vh;
+    margin-top: 52vh;
+  }
+
+  /* Both were pinned to their clamp() minimums on mobile since the vw
+     component barely contributes at narrow widths -- bumped up so
+     they read as more substantial on a phone screen. */
+  .hero__date {
+    font-size: 3.6rem;
+  }
+
+  .hero__content .btn {
+    padding: 24px 52px;
+    font-size: 1.6rem;
   }
 
   /* Lighter and smaller on narrow cards -- the bold stroke treatment

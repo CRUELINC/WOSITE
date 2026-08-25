@@ -587,9 +587,10 @@ a {
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
-  /* Vertically centered at rest. On hover/expand this switches to
-     flex-end (see below) so the text stays pinned under the revealed
-     artwork banner instead of drifting into the middle of a now much
+  /* Vertically centered at rest. On expand this switches to
+     flex-start (see below) so the text stays pinned at the top, above
+     the artwork banner (which is anchored to the bottom — see
+     .bar__art), instead of drifting into the middle of a now much
      taller card. */
   justify-content: center;
   transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s var(--ease-smooth);
@@ -628,7 +629,7 @@ a {
      previously this replaced the seam shadow outright, which is why
      it visibly vanished at the top edge once a card grew. */
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18), 0 24px 48px rgba(0, 0, 0, 0.3);
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 /* +/- toggle, corner-pinned on every card. The two bars forming the
@@ -714,13 +715,15 @@ a {
 
 .bar__art {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
   /* Fixed at roughly half the expanded card height (see
      .stack-card.is-expanded below) rather than stretching to fill the
-     whole card — the artwork should read as a banner across the top,
-     not take over the entire expanded card. */
+     whole card — the artwork should read as a banner across the
+     bottom, not take over the entire expanded card. Anchored to the
+     bottom (rather than the top) so it sits under the title/location
+     text, which is now pinned to the top when expanded. */
   height: clamp(260px, 32.5vw, 380px);
   z-index: 0;
   overflow: hidden;
@@ -836,11 +839,11 @@ a {
 }
 
 /* At rest the artwork sits at 12% opacity, so the card's own solid
-   colour already keeps the text legible. Expanded on hover, the
-   artwork goes to full strength and can get busy right behind the
-   text — this scrim (each card's own colour, fading upward into the
-   art) keeps the title/meta readable without flattening the reveal
-   above it. */
+   colour already keeps the text legible. Expanded, the artwork goes
+   to full strength and can get busy right behind the text — this
+   scrim (each card's own colour, fading downward into the art below)
+   keeps the title/location readable without flattening the reveal
+   underneath it. */
 .bar__inner::before {
   content: "";
   position: absolute;
@@ -855,15 +858,15 @@ a {
 }
 
 .bar--free .bar__inner::before {
-  background: linear-gradient(to top, rgba(255, 228, 0, 0.94), rgba(255, 228, 0, 0) 100%);
+  background: linear-gradient(to bottom, rgba(255, 228, 0, 0.94), rgba(255, 228, 0, 0) 100%);
 }
 
 .bar--paid .bar__inner::before {
-  background: linear-gradient(to top, rgba(255, 87, 251, 0.94), rgba(255, 87, 251, 0) 100%);
+  background: linear-gradient(to bottom, rgba(255, 87, 251, 0.94), rgba(255, 87, 251, 0) 100%);
 }
 
 .bar--tickets .bar__inner::before {
-  background: linear-gradient(to top, rgba(40, 6, 40, 0.9), rgba(40, 6, 40, 0) 100%);
+  background: linear-gradient(to bottom, rgba(40, 6, 40, 0.9), rgba(40, 6, 40, 0) 100%);
 }
 
 .bar__title {

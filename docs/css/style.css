@@ -617,7 +617,11 @@ a {
 
 .stack-card.is-expanded {
   height: clamp(600px, 75vw, 860px);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+  /* Keeps the same upward seam shadow every card has at rest, plus a
+     stronger downward one for the extra elevation while expanded --
+     previously this replaced the seam shadow outright, which is why
+     it visibly vanished at the top edge once a card grew. */
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18), 0 24px 48px rgba(0, 0, 0, 0.3);
   justify-content: flex-end;
 }
 

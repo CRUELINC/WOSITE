@@ -136,17 +136,22 @@ a {
   text-shadow: none;
 }
 
+/* Fixed rem sizing (rather than chained em, which was coming out
+   smaller than intended and reading as slightly misaligned) so the
+   circle is a consistent, generous size and stays precisely centered
+   on the button's own cross-axis regardless of font-size. */
 .btn__arrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.7em;
-  height: 1.7em;
+  align-self: center;
+  width: 2.4rem;
+  height: 2.4rem;
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--black);
   color: var(--yellow);
-  font-size: 0.55em;
+  font-size: 1.15rem;
   line-height: 1;
 }
 

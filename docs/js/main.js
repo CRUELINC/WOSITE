@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCardArtScroll();
   initTicketsCardVideo();
   initCountdown();
+  initStickyCtaContrast();
 });
 
 /* ---------------- NAV ---------------- */
@@ -204,6 +205,34 @@ function initCountdown() {
 
   tick();
   setInterval(tick, 1000);
+}
+
+/* ---------------- STICKY CTA CONTRAST ----------------
+   The fixed "Get Tickets" button is yellow so it reads clearly over
+   the site's mostly-light background, but the Day card and the
+   footer are that same yellow -- the button would disappear into
+   them. Swap it to pink for as long as it's sitting over a yellow
+   section, using plain rect overlap checks (cheap, and avoids the
+   IntersectionObserver rootMargin gymnastics a viewport-edge trigger
+   like this would otherwise need). */
+
+function initStickyCtaContrast() {
+  const cta = document.querySelector(".hero__sticky-cta");
+  const yellowEls = document.querySelectorAll(".bar--free, .site-footer");
+  if (!cta || !yellowEls.length) return;
+
+  function check() {
+    const ctaRect = cta.getBoundingClientRect();
+    const overYellow = Array.from(yellowEls).some((el) => {
+      const r = el.getBoundingClientRect();
+      return ctaRect.bottom > r.top && ctaRect.top < r.bottom;
+    });
+    cta.classList.toggle("hero__sticky-cta--pink", overYellow);
+  }
+
+  check();
+  window.addEventListener("scroll", check, { passive: true });
+  window.addEventListener("resize", check);
 }
 
 /* ---------------- FAQ ACCORDION ---------------- */

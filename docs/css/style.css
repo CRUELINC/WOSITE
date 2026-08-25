@@ -97,8 +97,8 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: clamp(18px, 2.4vw, 26px) clamp(40px, 5vw, 60px);
+  gap: 4px;
+  padding: clamp(12px, 1.6vw, 18px) clamp(40px, 5vw, 60px);
   border-radius: 999px;
   border: none;
   background: var(--black);
@@ -163,7 +163,7 @@ a {
      against a curved boundary looks smaller than the same padding
      against a flat one. The extra +8px is a purely optical
      correction, not a real measurement. */
-  margin-right: calc(clamp(18px, 2.4vw, 26px) - clamp(40px, 5vw, 60px) + 8px);
+  margin-right: calc(clamp(12px, 1.6vw, 18px) - clamp(40px, 5vw, 60px) + 8px);
 }
 
 .btn__arrow::before,
@@ -977,8 +977,8 @@ a {
   line-height: 0.92;
   text-align: center;
   margin: 0;
-  -webkit-text-stroke: 0.75px currentColor;
-  text-shadow: 0.3px 0 currentColor, -0.3px 0 currentColor;
+  -webkit-text-stroke: 0.4px currentColor;
+  text-shadow: 0.15px 0 currentColor, -0.15px 0 currentColor;
 }
 
 /* ---------------- GET TICKETS CARD ---------------- */

@@ -671,7 +671,7 @@ a {
 .stack-card {
   position: relative;
   width: 100%;
-  height: clamp(230px, 30vw, 290px);
+  height: clamp(230px, 30vw, 330px);
   overflow: hidden;
   flex-shrink: 0;
   box-sizing: border-box;
@@ -714,6 +714,11 @@ a {
 .stack-card:nth-child(3) {
   margin-top: -24px;
   z-index: 30;
+}
+
+.stack-card:nth-child(4) {
+  margin-top: -24px;
+  z-index: 40;
 }
 
 .stack-card.is-expanded {
@@ -828,7 +833,7 @@ a {
   top: 0;
   height: 100%;
   object-fit: cover;
-  opacity: 0.12;
+  opacity: 0.07;
   transition: opacity 0.5s var(--ease-smooth);
 }
 
@@ -890,7 +895,11 @@ a {
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  padding: clamp(32px, 5vw, 64px) clamp(48px, 14vw, 220px);
+  /* Now that the location(s) live in their own corner-pinned pill
+     stack rather than stacked under the title here, the title alone
+     sits closer to the top than reads as centred in the collapsed
+     card -- extra top padding nudges it down. */
+  padding: clamp(90px, 11vw, 130px) clamp(48px, 14vw, 220px) clamp(32px, 5vw, 64px);
   width: 100%;
   text-align: center;
 }
@@ -920,21 +929,34 @@ a {
   opacity: 0.9;
 }
 
-.bar__location {
+/* Stacked left-aligned pills directly under the time/date pill, on
+   every viewport -- not part of the centred title block at all. */
+.bar__locations {
+  position: absolute;
+  top: 72px;
+  left: 20px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.bar__location-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
   font-family: var(--font-accent);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  font-size: clamp(1.15rem, 1.7vw, 1.45rem);
-  line-height: 1.4;
-  opacity: 0.85;
-  margin: 4px 0 0;
-  /* Prevents an orphan word wrapping onto its own line -- doesn't
-     affect the explicit <br> breaks Day/Night use between their two
-     lines, only stops either line wrapping further on its own. */
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  line-height: 1;
+  opacity: 0.95;
   white-space: nowrap;
-  -webkit-text-stroke: 0.6px currentColor;
-  text-shadow: 0.25px 0 currentColor, -0.25px 0 currentColor;
 }
 
 /* At rest the artwork sits at 12% opacity, so the card's own solid
@@ -986,13 +1008,6 @@ a {
 .bar--tickets {
   background: linear-gradient(160deg, #3c0a3c, #7b1189);
   color: var(--white);
-  /* Last card in the stack -- nothing below it to overhang, so unlike
-     Day/Night it also gets rounded bottom corners and a downward
-     shadow of its own, on top of the shared upward one at its top
-     seam with Night. */
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 /* Unlike Day/Night's illustrations, the Tickets card's video is the
@@ -1036,9 +1051,138 @@ a {
   text-shadow: 0.3px 0 currentColor, -0.3px 0 currentColor;
 }
 
-.bar--tickets .bar__location {
-  position: relative;
+/* ---------------- SITE MAP CARD ---------------- */
+
+.bar--map {
+  background: #ffffff;
+  color: #0b0b0b;
+  /* Last card in the stack -- nothing below it to overhang, so unlike
+     Day/Night/Tickets it also gets rounded bottom corners and a
+     downward shadow of its own, on top of the shared upward one at
+     its top seam with Tickets. */
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  /* Bigger, darker downward shadow than the other cards get at their
+     seams -- this is the one seam that lands over the flat-colour
+     footer rather than another card, so it needs to read as a much
+     more distinct overhang. */
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18), 0 32px 56px rgba(0, 0, 0, 0.4);
+}
+
+/* Same splash artwork used behind the footer, instead of a flat white
+   card -- everything else (title, pill, legend, map image) sits above
+   it via z-index. */
+.bar--map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("../assets/img/backdrop-landing-baked.webp");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
+  /* Scaled up beyond the card's own bounds (clipped by .stack-card's
+     overflow: hidden) so the splash bleeds past the edges instead of
+     visibly running out right at the card boundary. */
+  transform: scale(1.6);
+}
+
+.bar--map .bar__pill,
+.bar--map .bar__toggle {
+  z-index: 3;
+}
+
+.bar--map .map-content {
   z-index: 1;
+}
+
+/* The centred "Event Map" title stays put across both states -- only
+   .map-content (the numbered legend + map image) appears/disappears
+   around it, rather than swapping in a second, separate title. */
+
+.map-content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: clamp(24px, 4vw, 64px);
+  padding: clamp(220px, 24vw, 300px) clamp(80px, 12vw, 220px) clamp(32px, 5vw, 80px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease-smooth);
+}
+
+.bar--map.is-expanded .map-content {
+  opacity: 1;
+  pointer-events: auto;
+  /* The image is bottom/right-anchored inside this flex box, so while
+     the card's own height is still animating (0.8s, see .stack-card)
+     it visibly slides around under the fade. Waiting for that to
+     finish before fading in avoids the zig-zag and lets it appear
+     already settled in its final spot. */
+  transition-delay: 0.6s;
+}
+
+.map-content__legend {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-left: clamp(80px, 12vw, 220px);
+}
+
+.map-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.map-legend li {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-family: var(--font-accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: clamp(1.9rem, 2.7vw, 2.5rem);
+  white-space: nowrap;
+}
+
+.map-legend__pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #ffe400;
+  border: 4px solid #ff57fb;
+  color: #000;
+  font-size: 2.3rem;
+  font-weight: 900;
+}
+
+.map-legend__pin--dark {
+  background: #000;
+  color: #ffe400;
+}
+
+.map-content__img {
+  max-width: 88%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: bottom left;
+  border-radius: 24px;
+  align-self: flex-end;
+  margin-right: clamp(90px, 13vw, 220px);
+  margin-top: clamp(20px, 3vw, 50px);
 }
 
 .section-head {
@@ -1069,12 +1213,8 @@ a {
 }
 
 /* ---------------- SITE MAP + FOOTER ----------------
-   One continuous section/backdrop spans both the site map and the
-   footer logo, using the same splash texture as the rest of the site
-   (rather than a second, separate footer-only image) so there's no
-   seam between them. background-size: cover keeps that backdrop
-   filling the whole section regardless of how tall the map + logo
-   content ends up being. */
+   Flat brand yellow instead of the splash texture image -- solid
+   colour, no backdrop asset needed. */
 
 .site-footer {
   position: relative;
@@ -1082,27 +1222,12 @@ a {
   width: 100%;
   overflow: hidden;
   color: var(--white);
-}
-
-.site-footer::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background-image: url("../assets/img/backdrop-landing-baked.webp");
-  background-repeat: no-repeat;
-  background-position: center top;
-  background-size: cover;
-  /* Flip the backdrop vertically so its densest splash concentration
-     sits at the BOTTOM of this section (matching the inverted
-     treatment used by .intro-backdrop above), instead of fading out
-     to white right where the footer wordmark sits. Scaled up beyond
-     100% so the splash bleeds past the left/right edges instead of
-     visibly running out before reaching them at wide viewport widths.
-     Isolated to this pseudo-element (rather than transforming
-     .site-footer itself) so only the backdrop is flipped/scaled, not
-     the map image and logo sitting on top of it. */
-  transform: scaleY(-1) scale(1.2);
+  background: rgb(255, 228, 0);
+  /* Pulled up under the Event Map card's rounded bottom corners/shadow
+     (rather than sitting flush beneath it) so the card visibly
+     overhangs the footer instead of just meeting it edge-to-edge. */
+  margin-top: -80px;
+  padding-top: 80px;
 }
 
 .site-footer__content {
@@ -1110,28 +1235,80 @@ a {
   z-index: 1;
 }
 
-.site-footer__map {
-  padding: clamp(60px, 10vw, 140px) 24px 0;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.site-footer__map img {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.25));
-}
-
-.site-footer__logo {
-  position: relative;
+.site-footer__row {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: clamp(60px, 10vw, 140px);
   padding: clamp(140px, 18vw, 220px) 24px;
+  text-align: center;
+}
+
+.site-footer__col--left {
+  text-align: left;
+}
+
+.site-footer__col--left .site-footer__list {
+  align-items: flex-start;
+}
+
+.site-footer__col--right {
+  text-align: right;
+}
+
+.site-footer__col--right .site-footer__list {
+  align-items: flex-end;
+}
+
+.site-footer__heading {
+  font-family: var(--font-accent);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  color: #1a1200;
+  margin: 0 0 20px;
+}
+
+.site-footer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.site-footer__list li,
+.site-footer__list a {
+  font-family: var(--font-accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+  color: #1a1200;
+  opacity: 0.85;
+}
+
+.site-footer__list a {
+  text-decoration: none;
+  transition: opacity 0.2s var(--ease-smooth);
+}
+
+.site-footer__list a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.site-footer__logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .site-footer__logo img {
-  width: min(46vw, 300px);
+  width: min(30vw, 260px);
 }
 
 /* ---------------- PAGE HERO (Tickets / Program) ---------------- */
@@ -1428,6 +1605,58 @@ a {
     height: 190px;
   }
 
+  /* Site Map's legend-beside-image layout doesn't fit a narrow
+     viewport -- stack the map on top and the numbered legend below it,
+     and let the card grow tall enough (with its own scroll) to hold
+     both instead of the fixed desktop expanded height. */
+  .bar--map.is-expanded {
+    height: min(85vh, 720px);
+  }
+
+  .map-content {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow-y: auto;
+    padding: 100px 24px 24px;
+    gap: 24px;
+  }
+
+  .map-content__img {
+    order: -1;
+    max-width: 100%;
+    width: 100%;
+    max-height: 45vh;
+    align-self: center;
+    margin: 0;
+    object-position: center;
+  }
+
+  .map-content__legend {
+    width: 100%;
+    margin-left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .map-legend {
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .map-legend li {
+    gap: 16px;
+    font-size: 1.55rem;
+  }
+
+  .map-legend__pin {
+    width: 42px;
+    height: 42px;
+    border-width: 3px;
+    font-size: 1.25rem;
+  }
+
   /* 75vh was tuned against the desktop hero, where the WOS graphic
      fills much more of that space -- on a narrow/tall mobile
      viewport it's comparatively small, leaving a big empty gap before
@@ -1449,14 +1678,26 @@ a {
     font-size: 1.6rem;
   }
 
-  /* Lighter and smaller on narrow cards -- the bold stroke treatment
-     (tuned for a wide single-line desktop layout) reads as too heavy
-     once this text is wrapping across 2-4 lines in a much narrower
-     column. */
-  .bar__location {
-    font-size: 0.8rem;
-    -webkit-text-stroke: 0;
-    text-shadow: none;
+  /* Now that .bar__locations has moved out into its own corner-pinned
+     pill stack, .bar__inner only holds the title -- nudge it down from
+     the collapsed card's top edge so it reads as vertically centred
+     instead of sitting flush against the top padding. */
+  .bar__inner {
+    padding-top: 60px;
+  }
+
+  /* Tighter offsets/sizing to match the smaller pill/card dimensions
+     set below for narrow viewports. */
+  .bar__locations {
+    top: 56px;
+    left: 14px;
+    gap: 6px;
+  }
+
+  .bar__location-pill {
+    height: 28px;
+    padding: 0 12px;
+    font-size: 0.7rem;
   }
 
   .bar__pill {
@@ -1493,6 +1734,12 @@ a {
   .nav__burger {
     display: flex;
   }
+  .site-footer__row {
+    flex-direction: column;
+    gap: 40px;
+    padding: 80px 24px;
+  }
+
   .sitemap-diagram {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 90px 110px 110px 90px 90px;

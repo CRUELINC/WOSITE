@@ -91,7 +91,10 @@
         </div>
         <div class="bar__inner">
           <h2 class="bar__title">Day</h2>
-          <p class="bar__location">St. Andrew's Park<br />Waterworks Food Hall</p>
+          <div class="bar__locations">
+            <span class="bar__location-pill">St. Andrew's Park</span>
+            <span class="bar__location-pill">Waterworks Food Hall</span>
+          </div>
         </div>
       </div>
 
@@ -109,7 +112,9 @@
         </div>
         <div class="bar__inner">
           <h2 class="bar__title">Night</h2>
-          <p class="bar__location">30 Maud Street</p>
+          <div class="bar__locations">
+            <span class="bar__location-pill">30 Maud Street</span>
+          </div>
         </div>
       </div>
 
@@ -131,7 +136,32 @@
         </div>
         <div class="bar__inner">
           <h2 class="bar__title bar__title--tickets"><a href="javascript:void(0)"><span>Get Tickets</span></a></h2>
-          <p class="bar__location">West of Spadina</p>
+          <div class="bar__locations">
+            <span class="bar__location-pill">West of Spadina</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Site Map -->
+      <div class="bar bar--map stack-card card--map">
+        <button class="bar__toggle" type="button" aria-label="Expand Site Map" aria-expanded="false"></button>
+        <p class="bar__pill">Event Map</p>
+        <div class="bar__inner">
+          <h2 class="bar__title">Event Map</h2>
+        </div>
+        <div class="map-content">
+          <div class="map-content__legend">
+            <ul class="map-legend">
+              <li><span class="map-legend__pin">1</span>Waterworks Food Hall</li>
+              <li><span class="map-legend__pin">2</span>Local Vendor Market</li>
+              <li><span class="map-legend__pin">3</span>Off-Leash Dog Park</li>
+              <li><span class="map-legend__pin">4</span>Wellness Square</li>
+              <li><span class="map-legend__pin">5</span>Entertainment</li>
+              <li><span class="map-legend__pin">6</span>Lounge Zone</li>
+              <li><span class="map-legend__pin map-legend__pin--dark">7</span>Block Party</li>
+            </ul>
+          </div>
+          <img class="map-content__img" src="assets/img/figma-sitemap-pins.png" alt="West of Spadina site map" loading="lazy" decoding="async" />
         </div>
       </div>
 
@@ -142,11 +172,26 @@
 <!-- ============ SITE MAP + FOOTER — one continuous backdrop ============ -->
 <footer class="site-footer">
   <div class="site-footer__content">
-    <div class="site-footer__map">
-      <img src="assets/img/figma-sitemap.webp" alt="West of Spadina site map" loading="lazy" decoding="async" />
-    </div>
-    <div class="site-footer__logo">
-      <img src="assets/img/wos-bubble-black.svg" alt="West of Spadina" loading="lazy" decoding="async" />
+    <div class="site-footer__row">
+      <div class="site-footer__col site-footer__col--left">
+        <h3 class="site-footer__heading">Partners</h3>
+        <ul class="site-footer__list">
+          <li>CRUEL</li>
+          <li>Waterworks Food Hall</li>
+          <li>St. Andrew's Park</li>
+        </ul>
+      </div>
+      <div class="site-footer__logo">
+        <img src="assets/img/wos-bubble-black.svg" alt="West of Spadina" loading="lazy" decoding="async" />
+      </div>
+      <div class="site-footer__col site-footer__col--right">
+        <h3 class="site-footer__heading">Socials</h3>
+        <ul class="site-footer__list">
+          <li><a href="javascript:void(0)">Instagram</a></li>
+          <li><a href="javascript:void(0)">TikTok</a></li>
+          <li><a href="javascript:void(0)">X</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 </footer>

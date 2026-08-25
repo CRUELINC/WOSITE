@@ -106,6 +106,7 @@ a {
   font-family: var(--font-accent);
   font-weight: 700;
   font-size: clamp(1.3rem, 2vw, 1.7rem);
+  line-height: 1;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   cursor: pointer;
@@ -315,6 +316,20 @@ a {
 
 @media (max-width: 720px) {
   .nav__countdown-item span {
+    display: none;
+  }
+
+  /* Logo + countdown sat noticeably taller than the frosted glass
+     panel behind them at this width, visibly spilling past its
+     softened lower edge (see .nav::before's fade) instead of reading
+     as contained within it -- scaled down as one unit to bring them
+     back inside it. */
+  .nav__center {
+    top: 0%;
+    transform: translate(-50%, -20%) scale(0.8);
+  }
+
+  .nav::before {
     display: none;
   }
 }
@@ -1745,7 +1760,7 @@ a {
      graphic closer to the nav instead of sitting mid-screen. */
   .hero__layer--mid,
   .hero__layer--top {
-    transform: translateY(-21vh);
+    transform: translateY(-10vh);
   }
 
   /* The 30vw term barely contributes at narrow widths, so
@@ -1891,8 +1906,8 @@ a {
   }
 
   .hero__sticky-cta {
-    padding: 24px 52px;
-    font-size: 1.6rem;
+    padding: 16px 36px;
+    font-size: 1.3rem;
     bottom: 16px;
   }
 

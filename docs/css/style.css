@@ -940,6 +940,18 @@ a {
   height: 100%;
 }
 
+/* Centered over the video, always present -- most visible/usable once
+   the card is expanded and the video fills real space, but it's the
+   same element at rest too rather than something that pops in only
+   on expand. */
+.bar__art-cta {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+}
+
 .bar--tickets .bar__art-img--full {
   opacity: 0.35;
 }

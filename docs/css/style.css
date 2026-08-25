@@ -134,6 +134,7 @@ a {
   /* Less bold than the base .btn -- drop its stroke-based thickening. */
   -webkit-text-stroke: 0;
   text-shadow: none;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
 }
 
 /* Fixed rem sizing (rather than chained em, which was coming out
@@ -150,7 +151,7 @@ a {
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--black);
-  color: var(--yellow);
+  color: var(--white);
   font-size: 1.15rem;
   line-height: 1;
 }

@@ -130,7 +130,24 @@ a {
 .btn--yellow-pink {
   background: var(--yellow);
   border-color: var(--black);
-  color: var(--pink);
+  color: var(--black);
+  /* Less bold than the base .btn -- drop its stroke-based thickening. */
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+
+.btn__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7em;
+  height: 1.7em;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--black);
+  color: var(--yellow);
+  font-size: 0.55em;
+  line-height: 1;
 }
 
 .btn--outline {

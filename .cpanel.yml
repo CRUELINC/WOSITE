@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/prwmrek7/ambitious-platinum-horse.72-251-7-3.cpanel.site/
+    - /bin/cp -R docs/. $DEPLOYPATH

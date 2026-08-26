@@ -1955,15 +1955,6 @@ a {
 }
 
 @media (max-width: 720px) {
-  /* Both sponsor carousels run slightly faster here than on desktop. */
-  .bar__sponsors-track {
-    animation-duration: 22s;
-  }
-
-  .sponsors__track {
-    animation-duration: 90s;
-  }
-
   /* Both layers centre their image in their own full 100vh box, which
      sits lower than it needs to on a narrow/tall mobile viewport where
      there's a lot of empty height above and below. Shifting both up

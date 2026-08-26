@@ -1220,6 +1220,14 @@ a {
   gap: clamp(48px, 6vw, 90px);
   width: max-content;
   animation: sponsor-scroll 34s linear infinite;
+  /* Promotes the track to its own compositor layer so the browser can
+     animate it on the GPU instead of re-rasterizing on the main
+     thread every frame -- without this, one of the source logo files
+     being a full 4000x4000px PNG (since fixed, but still the largest
+     asset in the strip) was enough to stall the main thread on mobile,
+     which read as the marquee starting slow then visibly skipping
+     ahead once the backlog cleared. */
+  will-change: transform;
 }
 
 .bar__sponsors-track img {
@@ -1296,6 +1304,7 @@ a {
      copies were added to fix the loop gap) to keep the actual px/s
      drift speed the same, then slowed further on top of that. */
   animation: sponsor-scroll 150s linear infinite;
+  will-change: transform;
 }
 
 .sponsors__track img {

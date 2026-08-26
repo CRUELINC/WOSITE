@@ -1492,6 +1492,8 @@ a {
 
 .site-footer__col--left {
   text-align: left;
+  display: flex;
+  gap: clamp(40px, 6vw, 80px);
 }
 
 .site-footer__col--left .site-footer__list {
@@ -2129,6 +2131,11 @@ a {
   .site-footer__col--left,
   .site-footer__col--right {
     text-align: center;
+  }
+
+  .site-footer__col--left {
+    flex-direction: column;
+    gap: 32px;
   }
 
   .site-footer__col--left .site-footer__list,

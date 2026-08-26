@@ -1194,6 +1194,118 @@ a {
   text-shadow: 0.1px 0 currentColor, -0.1px 0 currentColor;
 }
 
+/* Night's sponsor strip -- sits just above the pop-art banner, fading
+   in with everything else on expand. The track holds two identical
+   copies of the logo set back to back; animating it exactly -50% (one
+   full copy's width) loops seamlessly since that position is
+   pixel-identical to the start. */
+.bar__sponsors {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(clamp(260px, 32.5vw, 380px) + 20px);
+  z-index: 1;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-smooth);
+}
+
+.stack-card.is-expanded .bar__sponsors {
+  opacity: 1;
+}
+
+.bar__sponsors-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(48px, 6vw, 90px);
+  width: max-content;
+  animation: sponsor-scroll 28s linear infinite;
+}
+
+.bar__sponsors-track img {
+  height: clamp(28px, 3.2vw, 44px);
+  width: auto;
+  max-width: none;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* Spirit of York, Casa Del Rey, and Shore Shakers read noticeably
+   smaller than the rest at the same fixed height -- bumped up to
+   match the others' visual weight. */
+.bar__sponsors-track img[src*="Shore"] {
+  height: clamp(64px, 7.6vw, 100px);
+}
+
+.bar__sponsors-track img[src*="CasaDelRey"],
+.bar__sponsors-track img[src*="cuervo"] {
+  height: clamp(56px, 6.6vw, 86px);
+}
+
+.bar__sponsors-track img[src*="Asset%201"] {
+  height: clamp(84px, 10vw, 130px);
+}
+
+.bar__sponsors-track img[src*="sapporo"] {
+  height: clamp(76px, 9vw, 116px);
+}
+
+.bar__sponsors-track img[src*="MMF"] {
+  height: clamp(96px, 11.4vw, 148px);
+}
+
+@keyframes sponsor-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------------- GLOBAL SPONSORS ----------------
+   Sits between the Event Map card and the footer. Dark rather than
+   matching the page's light background here -- both logos are
+   white-only artwork, and white-on-white would just disappear. Same
+   seamless-loop technique as Night's card-level strip (see
+   .bar__sponsors-track / @keyframes sponsor-scroll above): two
+   identical copies of the logo set back to back, animated exactly
+   -50% so the loop point is invisible. */
+.sponsors {
+  position: relative;
+  /* Lower than .event-stack's z-index: 30 -- the Event Map card needs
+     to visibly overhang this strip (same treatment the footer used to
+     get directly), not sit behind it. */
+  z-index: 5;
+  background: rgb(255, 228, 0);
+  /* Pulled up under the Event Map card's rounded bottom corners/shadow
+     (this used to be the footer's job, back when the footer sat
+     directly against the card stack -- moved here now that this strip
+     is the actual next sibling). */
+  margin-top: -80px;
+  padding: calc(clamp(32px, 5vw, 56px) + 80px) 0 clamp(32px, 5vw, 56px);
+  overflow: hidden;
+}
+
+.sponsors__track {
+  display: flex;
+  align-items: center;
+  gap: clamp(70px, 9vw, 140px);
+  width: max-content;
+  /* Duration scaled up along with the track's width (4x more logo
+     copies were added to fix the loop gap) to keep the actual px/s
+     drift speed the same, then slowed further on top of that. */
+  animation: sponsor-scroll 130s linear infinite;
+}
+
+.sponsors__track img {
+  height: clamp(36px, 4.4vw, 60px);
+  width: auto;
+  max-width: none;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
 .bar__lineup li:first-child {
   font-size: 1.15em;
   margin-bottom: 0.15em;
@@ -1455,17 +1567,6 @@ a {
   overflow: hidden;
   color: var(--white);
   background: rgb(255, 228, 0);
-  /* Pulled up under the Event Map card's rounded bottom corners/shadow
-     (rather than sitting flush beneath it) so the card visibly
-     overhangs the footer instead of just meeting it edge-to-edge.
-     Deliberately no z-index here -- the Event Map card already has a
-     high one (see .stack-card:nth-child(4)) that keeps it above the
-     footer where they overlap, and giving the footer its own negative
-     z-index put it behind .stack-section's own fading backdrop too,
-     letting the page's cream background show through as a stray tan
-     band right above the yellow. */
-  margin-top: -80px;
-  padding-top: 80px;
 }
 
 .site-footer__content {
@@ -1930,7 +2031,7 @@ a {
      mobile viewport -- back to flush with the card's own bottom edge
      here instead. */
   .card--night .bar__art {
-    bottom: 50px;
+    bottom: 10px;
   }
 
   /* Site Map's legend-beside-image layout doesn't fit a narrow

@@ -823,7 +823,7 @@ a {
 }
 
 .stack-card.is-expanded {
-  height: clamp(600px, 75vw, 860px);
+  height: clamp(700px, 85vw, 980px);
   /* Keeps the same upward seam shadow every card has at rest, plus a
      stronger downward one for the extra elevation while expanded --
      previously this replaced the seam shadow outright, which is why
@@ -1160,7 +1160,7 @@ a {
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(clamp(600px, 75vw, 860px) - clamp(260px, 32.5vw, 380px) + 120px);
+  top: calc(clamp(700px, 85vw, 980px) - clamp(260px, 32.5vw, 380px) + 120px);
   z-index: -1;
   list-style: none;
   margin: 0;
@@ -1184,7 +1184,7 @@ a {
 }
 
 .stack-card.is-expanded .bar__lineup {
-  top: calc(clamp(600px, 75vw, 860px) - clamp(260px, 32.5vw, 380px) - 310px);
+  top: calc(clamp(700px, 85vw, 980px) - clamp(260px, 32.5vw, 380px) - 540px);
   opacity: 1;
 }
 
@@ -1208,6 +1208,12 @@ a {
   overflow: hidden;
   opacity: 0;
   transition: opacity 0.6s var(--ease-smooth);
+}
+
+@media (min-width: 721px) {
+  .bar__sponsors {
+    bottom: calc(clamp(260px, 32.5vw, 380px) - 60px);
+  }
 }
 
 .stack-card.is-expanded .bar__sponsors {
@@ -1320,8 +1326,19 @@ a {
 }
 
 .bar__lineup li:first-child {
-  font-size: 1.15em;
-  margin-bottom: 0.15em;
+  font-size: 1.44em;
+  margin-bottom: 0.22em;
+}
+
+.bar__lineup-sub {
+  display: block;
+  font-size: 0.2em;
+  letter-spacing: 0.03em;
+  /* The heavy stroke/shadow thickening inherited from .bar__lineup
+     (tuned for the large main names) turns to mush at this much
+     smaller size -- dropped for legibility. */
+  -webkit-text-stroke-width: 0;
+  text-shadow: none;
 }
 
 .bar__lineup li:not(:first-child) {
@@ -2021,22 +2038,26 @@ a {
      tuned against a wider banner and sat too big and too high,
      crowding the pill/toggle and title above it. */
   .bar__lineup {
-    font-size: clamp(2.7rem, 9.8vw, 3.6rem);
+    font-size: clamp(3.2rem, 11.5vw, 4.2rem);
   }
 
   /* Mele's 1.5x/others' 0.75x split (tuned for the desktop banner)
      reads as too extreme a jump on a narrow card -- narrower the gap
      here instead. */
   .bar__lineup li:first-child {
-    font-size: 1.15em;
+    font-size: 1.9em;
+  }
+
+  .bar__lineup-sub {
+    font-size: 0.2em;
   }
 
   .bar__lineup li:not(:first-child) {
-    font-size: 0.9em;
+    font-size: 1.2em;
   }
 
   .stack-card.is-expanded .bar__lineup {
-    top: calc(clamp(600px, 75vw, 860px) - clamp(260px, 32.5vw, 380px) - 210px);
+    top: calc(clamp(700px, 85vw, 980px) - clamp(260px, 32.5vw, 380px) - 360px);
   }
 
   /* The -60px push used on wider viewports (see .card--night .bar__art

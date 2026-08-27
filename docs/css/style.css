@@ -68,11 +68,15 @@ body {
   overflow-x: hidden;
 }
 
-/* Fixed to the viewport bottom (not the document), invisible in
-   normal use since the opaque footer sits directly on top of it --
-   only shows up during mobile Safari's elastic overscroll, where it
-   keeps the reveal-past-the-end yellow (matching the footer) instead
-   of flashing the page's own cream background. */
+/* Fixed to the viewport bottom (not the document). Originally yellow
+   to match the footer for mobile Safari's elastic overscroll, but
+   that assumed only the (opaque) footer would ever sit in front of
+   it -- other content earlier in the page (e.g. the hero, once its
+   own backdrop image fades to transparent near the bottom) can also
+   land in this fixed 200px band without fully covering it, letting
+   the yellow show through as a stray bar. Matching the page's own
+   cream background instead means it blends in wherever it peeks
+   through, not just behind the footer. */
 body::after {
   content: "";
   position: fixed;
@@ -81,7 +85,7 @@ body::after {
   bottom: 0;
   height: 200px;
   z-index: -10;
-  background: rgb(255, 228, 0);
+  background: #f8f4ee;
   pointer-events: none;
 }
 
@@ -424,19 +428,42 @@ a {
 
 .landing-backdrop {
   position: relative;
-  z-index: 10;
+  /* Higher than .intro-backdrop's z-index: 20 -- .landing-backdrop
+     establishes its own stacking context, so no z-index set on
+     anything inside it (like .hero__content, the date) could ever
+     out-rank .intro-backdrop while this context itself sat at a lower
+     z-index than that. At in-between viewport widths where the two
+     backdrops' pull-up amounts don't line up as cleanly as they do at
+     the tuned mobile/desktop breakpoints, that let .intro-backdrop's
+     splash image paint over the date instead of behind it. */
+  z-index: 25;
   overflow: hidden;
 }
 
 .landing-backdrop::before {
   content: "";
   position: absolute;
-  inset: -30px;
+  top: -30px;
+  left: -30px;
+  right: -30px;
+  /* Stops short of this box's actual bottom edge (a full-height inset
+     would reach it) so there's a stretch of plain, untouched body
+     background between where this element's paint ends and the box's
+     own clip boundary -- no second layer's edge sitting right at that
+     boundary to seam against, no matter how closely its colour is
+     tuned to match. Every earlier attempt (mask-image, a flat cream
+     fill, a matching noise texture) still produced a visible line or
+     band exactly at that boundary, because there was always still
+     *something* painted there meeting the page's real background
+     head-on. Nothing painted there at all is the only version with no
+     edge to see. */
+  height: 75%;
   z-index: 0;
-  background-image: url("../assets/img/backdrop-landing-baked.webp");
-  background-repeat: no-repeat;
-  background-position: center top -200px;
-  background-size: cover;
+  background-image: linear-gradient(to bottom, transparent 0%, transparent 45%, var(--cream) 100%),
+    url("../assets/img/backdrop-landing-baked.webp");
+  background-repeat: no-repeat, no-repeat;
+  background-position: center top, center top -200px;
+  background-size: 100% 100%, cover;
   transform: scale(1.05);
 }
 
@@ -466,6 +493,16 @@ a {
   background-position: center top;
   background-size: 100% auto;
   transform: scale(1.05) scaleY(-1);
+  /* Fades this image out toward the TOP of the section (where it
+     would otherwise bleed up onto the date above it), staying opaque
+     toward the bottom near the intro copy/event-stack seam. Written
+     as "to bottom" even though this element is flipped vertically
+     (scaleY(-1) above): the mask is computed in the box's own local
+     coordinate space before that flip is applied, so what reads as
+     "black at the local top, fading toward the local bottom" ends up
+     rendering as transparent-at-the-visual-top after the flip. */
+  mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 65%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 65%);
 }
 
 .event-stack {
@@ -1226,6 +1263,11 @@ a {
   gap: clamp(48px, 6vw, 90px);
   width: max-content;
   animation: sponsor-scroll 34s linear infinite;
+  /* Paused until the page fully settles (see the "load" listener in
+     main.js) so the animation's timeline starts fresh once the
+     browser is idle, instead of accumulating elapsed time during a
+     busy cold load and then jumping ahead to catch up. */
+  animation-play-state: paused;
   /* Promotes the track to its own compositor layer so the browser can
      animate it on the GPU instead of re-rasterizing on the main
      thread every frame -- without this, one of the source logo files
@@ -1281,6 +1323,11 @@ a {
   }
 }
 
+body.carousels-ready .bar__sponsors-track,
+body.carousels-ready .sponsors__track {
+  animation-play-state: running;
+}
+
 /* ---------------- GLOBAL SPONSORS ----------------
    Sits between the Event Map card and the footer. Dark rather than
    matching the page's light background here -- both logos are
@@ -1314,6 +1361,7 @@ a {
      copies were added to fix the loop gap) to keep the actual px/s
      drift speed the same, then slowed further on top of that. */
   animation: sponsor-scroll 150s linear infinite;
+  animation-play-state: paused;
   will-change: transform;
 }
 
@@ -1973,19 +2021,33 @@ a {
     aspect-ratio: auto;
     margin-top: -260px;
   }
-}
 
-@media (max-width: 720px) {
-  /* Both layers centre their image in their own full 100vh box, which
-     sits lower than it needs to on a narrow/tall mobile viewport where
-     there's a lot of empty height above and below. Shifting both up
-     together (they need to move as one pair, or the bubble and
-     wordmark fall out of alignment with each other) brings the
-     graphic closer to the nav instead of sitting mid-screen. */
+  /* Paired with the -260px pull-up directly above -- all three of
+     these used to only kick in at the narrower 720px breakpoint,
+     while this pull-up (and the resulting overlap risk it creates)
+     starts at 900px. Between 721-900px that gap left the WOS
+     graphic/date pair at their desktop position while .intro-backdrop
+     was already pulled way up, so the date ended up landing wherever
+     that mismatch happened to put it -- on top of the wordmark, on
+     top of the intro copy, or somewhere in between depending on the
+     exact width. Matching all three rules' own breakpoint keeps the
+     whole hero (graphic, date, and intro clearance) moving as one
+     unit at every width where the pull-up is active. */
   .hero__layer--mid,
   .hero__layer--top {
     transform: translateY(-18vh);
   }
+
+  .hero__content {
+    margin-top: 25vh;
+  }
+
+  .intro {
+    padding-top: 90px;
+  }
+}
+
+@media (max-width: 720px) {
 
   /* Sits above the WOS graphic, roughly the same distance from it as
      .hero__date sits below -- scrolls away with the page instead of
@@ -2147,15 +2209,6 @@ a {
     font-size: 1.25rem;
   }
 
-  /* 75vh was tuned against the desktop hero, where the WOS graphic
-     fills much more of that space -- on a narrow/tall mobile
-     viewport it's comparatively small, leaving a big empty gap before
-     the date/CTA below. Pulling this up brings them closer to the
-     logo instead of stranding them near the bottom of the screen. */
-  .hero__content {
-    margin-top: 25vh;
-  }
-
   /* Both were pinned to their clamp() minimums on mobile since the vw
      component barely contributes at narrow widths -- bumped up so
      they read as more substantial on a phone screen. */
@@ -2170,10 +2223,6 @@ a {
   .intro__copy {
     font-size: 1.95rem;
     line-height: 1;
-  }
-
-  .intro {
-    padding-top: 20px;
   }
 
   .hero__sticky-cta {

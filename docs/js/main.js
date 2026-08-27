@@ -11,6 +11,22 @@ document.addEventListener("DOMContentLoaded", () => {
   initStickyCtaContrast();
 });
 
+/* ---------------- SPONSOR CAROUSELS ----------------
+   Both marquees are driven by an `animation: ... linear infinite`
+   that starts counting from navigation start, not from whenever the
+   browser actually gets around to rendering it. On a busy initial
+   load (parsing, images decoding, fonts swapping in) the animation
+   keeps accumulating elapsed time on that timeline even while frames
+   are being dropped, so once the page settles it visibly jumps ahead
+   to catch up -- reading as "slow, then suddenly fast" on a cold
+   load, and not happening on a warm one (e.g. after the screen wakes
+   from sleep, when everything's already decoded). Holding both tracks
+   paused until the window's load event, then starting them fresh,
+   means their timeline only ever begins once the page is idle. */
+window.addEventListener("load", () => {
+  document.body.classList.add("carousels-ready");
+});
+
 /* ---------------- NAV ---------------- */
 
 function initNav() {

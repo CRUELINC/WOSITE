@@ -1257,12 +1257,23 @@ a {
   opacity: 1;
 }
 
+/* Day's carousel sits higher than Night's -- more headroom above its
+   own artwork banner instead of sitting flush against it. */
+.card--day .bar__sponsors {
+  bottom: calc(clamp(260px, 32.5vw, 380px) + 60px);
+}
+
 .bar__sponsors-track {
   display: flex;
   align-items: center;
   gap: clamp(48px, 6vw, 90px);
   width: max-content;
   animation: sponsor-scroll 34s linear infinite;
+  /* Day's track holds more (and several individually much larger)
+     logos than Night's, so it's noticeably wider -- the same 34s
+     duration covers that greater distance faster, reading as a
+     quicker drift even though the animation itself is identical.
+     Scaling the duration up keeps the actual px/s speed matched. */
   /* Paused until the page fully settles (see the "load" listener in
      main.js) so the animation's timeline starts fresh once the
      browser is idle, instead of accumulating elapsed time during a
@@ -1276,6 +1287,10 @@ a {
      which read as the marquee starting slow then visibly skipping
      ahead once the backlog cleared. */
   will-change: transform;
+}
+
+.bar__sponsors-track--day {
+  animation-duration: 54s;
 }
 
 .bar__sponsors-track img {
@@ -1312,6 +1327,34 @@ a {
 
 .bar__sponsors-track img[src*="rhythm_logo"] {
   height: clamp(56px, 6.4vw, 88px);
+}
+
+/* Day's logos, all but Rhythm and Waterworks (sized separately/left
+   at the base height above). */
+.bar__sponsors-track--day img[src*="GOOD"],
+.bar__sponsors-track--day img[src*="TheWell"],
+.bar__sponsors-track--day img[src*="Puppy"] {
+  height: clamp(70px, 8.4vw, 110px);
+}
+
+.bar__sponsors-track--day img[src*="MS_EC"] {
+  height: clamp(80px, 9.6vw, 124px);
+}
+
+.bar__sponsors-track--day img[src*="DisConnect"] {
+  height: clamp(100px, 12vw, 156px);
+}
+
+.bar__sponsors-track--day img[src*="Original"] {
+  height: clamp(110px, 13vw, 168px);
+}
+
+.bar__sponsors-track--day img[src*="KnightCap"] {
+  height: clamp(96px, 11.4vw, 148px);
+}
+
+.bar__sponsors-track--day img[src*="WellByndpng"] {
+  height: clamp(320px, 38vw, 494px);
 }
 
 @keyframes sponsor-scroll {
